@@ -23,10 +23,20 @@ Resources:
 
 * https://twgljs.org/
 * https://medium.com/javascript-and-opinions/state-of-the-art-javascript-in-2016-ab67fc68eb0b#.59xwjq5b4
+* https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
+* https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Building_up_a_basic_demo_with_PlayCanvas/engine
+
 
 # running
 
+
+Supported Browsers: Chrome, FireFox
+
+As of this writing, Safari is not supported as it has poor support of es6. Could be supported if we enabled es6->es5 transpiling. If this ever gets completed, I would be surprised if Safari didn't support es6 as it has been ratified for a while now.
+
     npm start
+
 
 # npm libraries
 

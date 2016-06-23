@@ -79,19 +79,22 @@ gulp.task('libs', function () {
     .src([
       // This is used for importing modules
       'node_modules/systemjs/dist/system.js',
-      
+
       // This is used for babel polyfill in browser
       // 'node_modules/babel-polyfill/dist/polyfill.js', <- Not needed for modern es6 browsers
 
       // this is the gl-matrix library for vectors and matrices
       'node_modules/gl-matrix/dist/gl-matrix.js',
-      
+
       // "twgl.js": "^1.7.1" - Thin wrapper around webgl
       // 'node_modules/twgl.js/dist/twgl.js', <- No math classes
       'node_modules/twgl.js/dist/twgl-full.js',
 
       // Polyfill required for safari as no indication as to when they will support
-      'node_modules/whatwg-fetch/fetch.js'
+      'node_modules/whatwg-fetch/fetch.js',
+
+      // Polyfill to use standard api
+      'node_modules/fullscreen-api-polyfill/fullscreen-api-polyfill.js'
     ])
     .pipe(print())
     .pipe(gulp.dest('dist/client/libs'));
@@ -107,10 +110,11 @@ gulp.task('serve', ['build'], function() {
     }
   });
 
-  gulp.watch('dist/client/**/*', {cwd: 'dist/client'}, reload);
+  gulp.watch('**/*', {cwd: 'dist/client'}, reload);
   gulp.watch(SRC_JS, ['js']);
   gulp.watch(SRC_COPY, ['html']);
   gulp.watch(SRC_SCSS, ['scss']);
+  gulp.watch('src/client/index.html', ['index']);
 });
 
 gulp.task('clean', function () {

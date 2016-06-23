@@ -2,7 +2,7 @@ import Engine from './ge/engine';
 import Mesh from './ge/mesh';
 import Scene from './ge/scene'
 
-export default class MyGame extends Engine {
+class MyGame extends Engine {
   constructor(id) {
     super(id);
   }
@@ -15,13 +15,15 @@ export default class MyGame extends Engine {
   update2() {
     console.log('my game update');
   }
+  
+  requestFullscreen(id) {
+    if (typeof document.fullscreenEnabled !== undefined) {
+      let element = document.getElementById(id);
+      element.requestFullscreen();
+    }
+  }
 }
 
-
 console.log('loading game now 3210...');
-let game = new MyGame();
-let mesh = new Mesh();
-let scene = new Scene();
+window.game = new MyGame();
 
-scene.add(mesh);
-game.start();

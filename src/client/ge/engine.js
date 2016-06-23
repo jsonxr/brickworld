@@ -9,11 +9,16 @@ class Engine {
     this.isRunning = false;
     this.fs = null;
     this.vs = null;
+    this.loaded = false;
 
     fetch('http://localhost:3000/ge/shaders/cube.fs')
     .then( response => {
       response.text().then( text => {
         this.fs = text;
+        if (this.fs && this.vs) {
+          this.loaded = true;
+          console.log('loaded: ', this.loaded)
+        }
       });
     });
 
@@ -21,6 +26,10 @@ class Engine {
     .then( response => {
       response.text().then( text => {
         this.vs = text;
+        if (this.fs && this.vs) {
+          this.loaded = true;
+          console.log('loaded: ', this.loaded)
+        }
       });
     });
   }
@@ -28,20 +37,31 @@ class Engine {
   run(options) {
   }
 
-  start() {
-    if (this.fs && this.vs) {
-      console.log('started.');
-      this.drawScene();
-    } else {
-      console.log('starting...');
-      setTimeout(this.start.bind(this), 1000);
+  start(options) {
+    const me = this;
+    if (options && options.canvas) {
+      console.log('options: ', options)
+      me.canvas = document.getElementById(options.canvas);
+      console.log('setting canvas: ', me.canvas);
     }
+    // Ugly, has to be a better way like through events or a promise or something
+    // To know when we can begin creating our rendering context
+    function go() {
+      if (this.loaded) {
+        console.log('started.');
+        this.drawScene();
+      } else {
+        console.log('starting...');
+        setTimeout(go.bind(me), 1000);
+      }
+    }
+    go.bind(me)();
   }
 
   drawScene() {
     twgl.setDefaults({attribPrefix: "a_"});
         var m4 = twgl.m4;
-        var gl = twgl.getWebGLContext(document.getElementById("c"));
+        var gl = twgl.getWebGLContext(this.canvas);
         var programInfo = twgl.createProgramInfo(gl, [this.vs, this.fs]);
 
         var arrays = {

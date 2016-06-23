@@ -7,6 +7,20 @@
   <!-- inject:js -->
   <!-- endinject -->
 
+  <link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<body>
+<button onclick="game.requestFullscreen('ui')">Fullscreen</button>
+<div id="ui">
+  <canvas id="c">
+    <p>
+      You are using an <strong>outdated</strong> browser.
+      Please <a href="http://browsehappy.com/">upgrade your browser</a> to
+      improve your experience.
+    </p>
+  </canvas>
+  <h3>jason.snowcapstudios.com</h3>
+</div>
   <script>
   // set our baseURL reference path
   System.config({
@@ -17,18 +31,10 @@
       },
     }
   });
-  System.import('game.js');
+  System.import('game.js').then( () => {
+    window.game.start({ canvas: 'c'});
+    
+  })
   </script>
-  <link rel="stylesheet" type="text/css" href="app.css">
-</head>
-<body>
-
-<canvas id="c">
-  <p>
-    You are using an <strong>outdated</strong> browser.
-    Please <a href="http://browsehappy.com/">upgrade your browser</a> to
-    improve your experience.
-  </p>
-</canvas>
 </body>
 </html>
