@@ -1,27 +1,42 @@
 {
-  "name": "examples-webgl",
+  "name": "brickworld",
   "version": "1.0.0",
-  "description": "examples-webgl ==============",
-  "main": "index.js",
+  "license": "MIT",
+  "description": "brickworld-webgl ==============",
+  "private": true,
   "scripts": {
+    "start": "npm install && gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jsonxr/examples-webgl.git"
+    "url": "https://github.com/jsonxr/brickworld.git"
   },
-  "author": "",
-  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jsonxr/examples-webgl/issues"
+    "url": "https://github.com/jsonxr/brickworld/issues"
   },
-  "homepage": "https://github.com/jsonxr/examples-webgl",
+  "homepage": "https://github.com/jsonxr/brickworld",
   "devDependencies": {
-    "gl-matrix": "git+https://github.com/toji/gl-matrix.git#f552bb2d97789265579f5d643dd31c713a5945fc",
-    "gulp": "^3.8.10",
-    "gulp-concat": "^2.4.3"
+    "babel-plugin-transform-es2015-modules-systemjs": "^6.9.0",
+    "browser-sync": "^2.13.0",
+    "del": "^2.2.1",
+    "gl-matrix": "^2.3.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-cached": "^1.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-inject": "^4.1.0",
+    "gulp-print": "^2.0.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-watch": "^4.3.8",
+    "systemjs": "^0.19.31",
+    "twgl.js": "^1.7.1",
+    "whatwg-fetch": "^1.0.0"
   },
   "dependencies": {
-    "express": "^4.10.6"
+    "express": "^4.14.0",
+    "ldraw": "^0.1.1",
+    "yargs": "^4.7.1"
   }
 }

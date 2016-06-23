@@ -4,7 +4,7 @@ var express = require('express');
 
 var app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist/client')));
 
 // This is if all other routes drop out...
 app.use(function(req, res) {

@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+//
+// Loads an ldraw model and lists all the submodels used by it
+//
+
+var fs = require('fs');
+var yargs = require('yargs');
+var path = require('path');
+var ldraw = require('ldraw')('.');
+
+var filename = yargs.argv._[0];
+if (! filename) {
+  console.log('Usage:  ldrawmodels model.ldr');
+  process.exit(-1);
+}
+filename = path.resolve(filename);
+
+
+ldraw.loadModel(filename, { recursive: true }, function (err, model) {
+  Object.keys(ldraw.models).forEach(function (key) {
+    console.log(key);
+  });
+});
+

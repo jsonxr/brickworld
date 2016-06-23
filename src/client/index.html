@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- inject:js -->
+  <!-- endinject -->
+
+  <script>
+  // set our baseURL reference path
+  System.config({
+    baseURL: '/',
+    packages: {
+      '/': {
+        defaultExtension: 'js'
+      },
+    }
+  });
+  System.import('game.js');
+  </script>
+  <link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<body>
+
+<canvas id="c">
+  <p>
+    You are using an <strong>outdated</strong> browser.
+    Please <a href="http://browsehappy.com/">upgrade your browser</a> to
+    improve your experience.
+  </p>
+</canvas>
+</body>
+</html>
