@@ -22,10 +22,34 @@ Technical:
 Resources:
 
 * https://twgljs.org/
+
+* SIMD - Make matrix operations much faster.
+    https://hacks.mozilla.org/2014/10/introducing-simd-js/
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SIMD
+
+    Firefox: Nightly
+    Chrome: Intent to implement
+    Microsoft: In development
+    Safari: ?
+
+* Shared Array Buffers - Ability to share memory between main thread and workers. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+
+    Firefox: 47
+    Chrome: In development  --js-flags=--harmony-sharedarraybuffer --enable-blink-feature=SharedArrayBuffer
+    Edge: ?
+    Safari: ?
+
+* Benchmark for js matrix libraries - http://stepheneb.github.io/webgl-matrix-benchmarks/matrix_benchmark.html
+
 * https://medium.com/javascript-and-opinions/state-of-the-art-javascript-in-2016-ab67fc68eb0b#.59xwjq5b4
 * https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
 * https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
 https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Building_up_a_basic_demo_with_PlayCanvas/engine
+
+* http://forums.ldraw.org/archive/index.php?thread-15870.html - json ldraw file format discussion
+* http://forums.ldraw.org/showthread.php?tid=14432&pid=14432#pid14432 - new ldraw file format discussion
+
+
 
 
 # running
