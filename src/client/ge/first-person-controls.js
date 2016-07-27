@@ -1,9 +1,7 @@
 class FirstPersonControls {
   constructor(camera) {
-    this.position = new THREE.Vector3();
     this.velocity = new THREE.Vector3();
-    this.enabled = true;
-    this.speed = 100;
+    this.speed = 293;
     this.jumpSpeed = 350;
     this.moveForward = false;
     this.moveLeft = false;
@@ -27,6 +25,12 @@ class FirstPersonControls {
         case 39: // right
         case 68: // d
           this.moveRight = true;
+          break;
+        case 33:
+          this.moveUp = true;
+          break;
+        case 34:
+          this.moveDown = true;
           break;
         case 32: // space
           if (this.canJump === true) {
@@ -55,12 +59,39 @@ class FirstPersonControls {
         case 68: // d
           this.moveRight = false;
           break;
+        case 33:
+          this.moveUp = false;
+          break;
+        case 34:
+          this.moveDown = false;
+          break;
       }
     }, false);
 
     this.controls = new THREE.PointerLockControls(camera);
-    this.controls.getObject().position.set(0,2,2); // Set starting position
-    this.controls.enabled = this.enabled;
+    this.controls.enabled = false;
+  }
+
+  //----------------
+  // position
+  //----------------
+  get position() {
+    return this.controls.getObject().position;
+  }
+
+  set position(vec) {
+    this.controls.getObject().position.set(vec.x, vec.y, vec.z);
+  }
+
+  //----------------
+  // enabled
+  //----------------
+  get enabled() {
+    return this.controls.enabled;
+  }
+
+  set enabled(value) {
+    this.controls.enabled = value;
   }
 
   getObject() {
@@ -70,16 +101,23 @@ class FirstPersonControls {
   update(delta) {
     if (this.enabled) {
 
-      this.velocity.x -= this.velocity.x * 10.0 * delta;
-      this.velocity.z -= this.velocity.z * 10.0 * delta;
+      // this.velocity.x -= this.velocity.x * 10.0 * delta;
+      // this.velocity.z -= this.velocity.z * 10.0 * delta;
 
-//      this.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+      // Gravity...
+      // this.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
 
-      if (this.moveForward) this.velocity.z -= this.speed * delta;
-      if (this.moveBackward) this.velocity.z += this.speed * delta;
+      if (this.moveForward) this.velocity.z = -this.speed;// * delta;
+      if (this.moveBackward) this.velocity.z = this.speed;// * delta;
+      if (!this.moveForward && !this.moveBackward) this.velocity.z = 0;
 
-      if (this.moveLeft) this.velocity.x -= this.speed  * delta;
-      if (this.moveRight) this.velocity.x += this.speed  * delta;
+      if (this.moveLeft) this.velocity.x = -this.speed;//  * delta;
+      if (this.moveRight) this.velocity.x = this.speed;//  * delta;
+      if (!this.moveLeft && !this.moveRight) this.velocity.x = 0;
+
+      if (this.moveUp) this.velocity.y = this.speed / 10;
+      if (this.moveDown) this.velocity.y = -this.speed / 10;
+      if (!this.moveUp && !this.moveDown) this.velocity.y = 0;
 
       // if (isOnObject === true) {
       //   velocity.y = Math.max(0, velocity.y);

@@ -2,13 +2,49 @@ const VECTORS_PER_TRIANGLE = 3;
 const VALUES_PER_VECTOR = 3;
 const TRIANGLES_PER_CUBE = 12;
 
+
+// Scale: 1 unit = 5/16" = 20 LDU
+//        20:1
+
+// Scale: LDU to Actual Lego size
+//        20 LDU = 5/16"
+//        24 LDU = 3/8"
+//        1 LDU = 1/64"
+
+
+// Scale: Lego To People Size
+//         4 blocks high = 6 feet tall
+//         4 * 3/8" = 6'
+//         1.5" = 6'
+//         24/16 = 6'
+//         1/4" = 1'
+//         1/4" = 12"
+//         1" = 48"
+
+// Scale: Run 5mph = 7.33333 ft/sec = 88 inch/sec
+//        x=5
+//        y = (x * 5280 * 12 * 64) / 3600;
+//        5 mi/hr * (1/48 scale * 5280 ft/mi * 12 inch/ft * 64 inch/LDU) / (1hr * 60min/hr * 60sec/min) = LDU/sec = 117
+
+//
+
 class Brick {
-  constructor() {
-    this.color = new THREE.Color( 0xff0000);
+  constructor(options = { width: 2, depth: 4, height: 3, color: '#f0f0f0', position: [0,0,0]}) {
+    this.color = new THREE.Color(options.color);
+    this.options = options;
+    this.position = new THREE.Vector3(options.position[0],
+                                      options.position[1],
+                                      options.position[2]);
   }
 
-  getBufferGeometry(options = {}) {
-    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+  get triangles() {
+    return 12;
+  }
+
+  getBufferGeometry() {
+    var geometry = new THREE.BoxBufferGeometry(this.options.width * 20,
+                                               this.options.height * 8,
+                                               this.options.depth * 20).toNonIndexed();
     const colors = new Float32Array( TRIANGLES_PER_CUBE * VECTORS_PER_TRIANGLE * VALUES_PER_VECTOR);
     for (let i = 0; i < colors.length; i = i + 3) {
       colors[i + 0] = this.color.r;
@@ -17,7 +53,52 @@ class Brick {
     }
     geometry.addAttribute('color', new THREE.BufferAttribute(colors, VECTORS_PER_TRIANGLE));
     geometry.removeAttribute('uv');
+    geometry.translate(this.position.x, this.position.y + this.options.height * 4, this.position.z); // Make it sit on the ground at 0,0,0
     return geometry;
+  }
+
+
+  getStudGeometry() {
+    const RADIUS_SEGMENTS = 16;
+    let studCount = this.options.width * this.options.depth;
+    let verticexCount = studCount * RADIUS_SEGMENTS * 4 * 3; // 1 top triangle, 1 bottom 
+                                                             // triangle, 2 triangles on side
+
+    var studs = new THREE.BufferGeometry();
+    // Per Vertex Colors
+    const colors = new Float32Array(verticexCount * 3); // 3 floats per vertex
+    for (let i = 0; i < colors.length; i = i + 3) {
+      colors[i + 0] = this.color.r;
+      colors[i + 1] = this.color.g;
+      colors[i + 2] = this.color.b;
+    }
+    studs.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+    // Positions
+    const vertices = new Float32Array(verticexCount * 3);
+    studs.addAttribute( 'position', new THREE.BufferAttribute(vertices, 3));
+    // Normals
+    const normals = new Float32Array(verticexCount * 3);
+    studs.addAttribute( 'normal', new THREE.BufferAttribute(normals, 3));
+
+    var geo = null;
+    let offset = 0;
+    let blockHeight = 8;
+    let blockWidth = 20;
+    let studHeight = 4;
+    let y = (studHeight / 2) + blockHeight * this.options.height;
+    for (let i = 0; i < this.options.width; i++ ) {
+      let x = (-blockWidth/2 * this.options.width + blockWidth/2) + blockWidth * i;
+      for (let j = 0; j < this.options.depth; j++) {
+        let z = (-blockWidth/2 * this.options.depth + blockWidth/2) + blockWidth * j;
+        var geometry = (new THREE.CylinderBufferGeometry(6, 6, 4, RADIUS_SEGMENTS)).toNonIndexed();
+        geometry.translate(x,y,z);
+        studs.merge(geometry, offset);
+        offset += geometry.getAttribute('position').count;
+      }
+    }
+    studs.translate(this.position.x, this.position.y, this.position.z);
+
+    return studs;
   }
 
 }

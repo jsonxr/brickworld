@@ -2,6 +2,7 @@ import Engine from './ge/engine';
 import Mesh from './ge/mesh';
 import Scene from './ge/scene';
 import Brick from './brick';
+import Chunk from './chunk';
 
 class MyGame extends Engine {
   constructor(id) {
@@ -18,11 +19,11 @@ class MyGame extends Engine {
     light.name = 'Ambient'
     this.scene.add( light );
     
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.9 );
     directionalLight.name = 'Sun';
-    directionalLight.position.set( 0, 1, 0 );
+    directionalLight.position.set( 0.2, 1, 0.2 );
     this.scene.add( directionalLight );
-    
+
     const pointLight = new THREE.PointLight(0xFFFFFF);
     pointLight.name = 'Point';
     pointLight.position.set(10, 30, 130);
@@ -31,42 +32,46 @@ class MyGame extends Engine {
     //----------------------------------
     // Add Geometry
     //----------------------------------
-    var b = new Brick();
-    const g = b.getBufferGeometry();
-    g.translate(0.5, 0.5, -0.5);
-    const m = new THREE.MeshPhongMaterial({
-      color: 0xaaaaaa, specular: 0xffffff, shininess: 250,
-      side: THREE.DoubleSide, vertexColors: THREE.VertexColors
+
+    // Material to use for drawing bricks
+    const m = new THREE.MeshStandardMaterial({
+      // wireframe:true,
+      vertexColors: THREE.VertexColors
     });
-    const mymesh = new THREE.Mesh(g, m);
-    mymesh.name = 'Block'
-    this.scene.add(mymesh);
-    console.log('what went wrong...');
 
+    this.controls.position.set(0, 88, 20 * 3); // Set starting position
 
+    var chunk = new Chunk();
+    var b = new Brick({ width: 32, depth: 32, height: 1, color: '#9BA19D', position: [0,-8,0]});
+    chunk.add(b);
 
+    var colors = ['#0055BF', '#257A3E', '#F2CD37', '#F2705E'];
+    for (let i = 0; i < 4; i++) {
+      var b2 = new Brick({ width: 2, depth: 4, height: 3, color: colors[i], position: [0,i * 24, 0]});
+      chunk.add(b2);
+    }
 
+    var b = new Brick({ width: 8, depth: 2, height: 1, color: '#FC97AC', position: [0,24*4, 20]});
+    chunk.add(b);
 
-    // var chunk = new THREE.BufferGeometry();
-    // console.log('chunk: ', chunk.id);
-    // var chunkVerts = new Float32Array(36);
-    // chunk.addAttribute( 'position', new THREE.BufferAttribute( chunkVerts, 3 ) );
-    //
-    // var len = brick.attributes.position.count;
-    // var newIndex = chunk.merge(brick, 0);
-    // var offset = 0 + len;
-    // console.log('new offset: ', offset);
-    // var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-    // var mesh = new THREE.Mesh( chunk, material );
-    //    this.scene.add(mesh);
+    let g = chunk.getBufferGeometry();
+    const bricks = new THREE.Mesh(g, m);
+    bricks.name = 'Bricks'
+    this.scene.add(bricks);
 
+    g = chunk.getStudGeometry();
+    const studs = new THREE.Mesh(g, m);
+    studs.name = 'Studs';
+    this.scene.add(studs);
 
-
+    this.selectable = bricks;
   }
 
 }
 
 
 const game = new MyGame();
-game.setDomElement('ui');
-game.start();
+setTimeout(() => { // Ensure we can fail in a source map friendly place (not index.html)
+  game.setDomElement('ui');
+  game.start();
+}, 0);
