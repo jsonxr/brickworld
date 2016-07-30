@@ -27,9 +27,11 @@ const TRIANGLES_PER_CUBE = 12;
 //        5 mi/hr * (1/48 scale * 5280 ft/mi * 12 inch/ft * 64 inch/LDU) / (1hr * 60min/hr * 60sec/min) = LDU/sec = 117
 
 //
+const blockGap = 1/4;
 
 class Brick {
   constructor(options = { width: 2, depth: 4, height: 3, color: '#f0f0f0', position: [0,0,0]}) {
+    this.uuid = THREE.Math.generateUUID();
     this.color = new THREE.Color(options.color);
     this.options = options;
     this.position = new THREE.Vector3(options.position[0],
@@ -42,9 +44,9 @@ class Brick {
   }
 
   getBufferGeometry() {
-    var geometry = new THREE.BoxBufferGeometry(this.options.width * 20,
-                                               this.options.height * 8,
-                                               this.options.depth * 20).toNonIndexed();
+    var geometry = new THREE.BoxBufferGeometry(this.options.width * 20 - blockGap,
+                                               this.options.height * 8 - blockGap,
+                                               this.options.depth * 20 - blockGap).toNonIndexed();
     const colors = new Float32Array( TRIANGLES_PER_CUBE * VECTORS_PER_TRIANGLE * VALUES_PER_VECTOR);
     for (let i = 0; i < colors.length; i = i + 3) {
       colors[i + 0] = this.color.r;
@@ -53,7 +55,10 @@ class Brick {
     }
     geometry.addAttribute('color', new THREE.BufferAttribute(colors, VECTORS_PER_TRIANGLE));
     geometry.removeAttribute('uv');
-    geometry.translate(this.position.x, this.position.y + this.options.height * 4, this.position.z); // Make it sit on the ground at 0,0,0
+    // Make it sit on the ground at x,y,z
+    geometry.translate(this.position.x,
+                       this.position.y + this.options.height * 4 + (blockGap / 2),
+                       this.position.z);
     return geometry;
   }
 
@@ -99,6 +104,14 @@ class Brick {
     studs.translate(this.position.x, this.position.y, this.position.z);
 
     return studs;
+  }
+
+  getSelectable() {
+    return this.getBufferGeometry();
+  }
+
+  getHighlight() {
+    return new THREE.EdgesGeometry( this.getBufferGeometry(), 0.1);
   }
 
 }

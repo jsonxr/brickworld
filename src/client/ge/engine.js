@@ -1,8 +1,10 @@
 'use strict'
 
-import Clock from './clock';
+import Profiler from './profiler';
 import FirstPersonControls from './first-person-controls';
 import Crosshair from './crosshair';
+import Highlight from './highlight';
+
 
 function _fullscreenPolyfill(ui, fn, me) {
   ui.requestFullscreen = ui.requestFullscreen ||
@@ -23,9 +25,11 @@ class Engine {
     this._camera = null;
     this._renderer = null;
     this.scene = null;
+    this.profiler = new Profiler();
     this._prevTime = performance.now();
+    this._highlight = null;
+    this.frameno = 0;
   }
-
   //--------------------------------------------------------------------------
   // Windowing, Fullscreen, Pointerlock
   //--------------------------------------------------------------------------
@@ -39,8 +43,10 @@ class Engine {
     if (element) {
       element.requestPointerLock();
       this.controls.enabled = true;
+      this._highlight.enabled = true;
     } else {
       this.controls.enabled = false;
+      this._highlight.enabled = false;
     }
   }
 
@@ -131,6 +137,10 @@ class Engine {
     this._renderer.autoClear = false;
     this._ui.appendChild(this._renderer.domElement);
 
+    // FPS stats
+    this.stats = new Stats();
+    this._ui.appendChild(this.stats.dom);
+
     // Grid
     const size = 16 * 20; // 20LDU units x 16 studs
     const step = 32;
@@ -142,30 +152,27 @@ class Engine {
     this.controls.position.set(0, 88, 20 * 15); // Set starting position
     this.scene.add(this.controls.getObject());
 
-
     // This is used for selecting geometry...
-    this.raycaster = new THREE.Raycaster();
-    this.raycaster.far = 20 * 8; // 8 blocks distance
-    this.mouse = new THREE.Vector2(0, 0);
-    var geometry = new THREE.BufferGeometry();
-    geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(4 * 3), 3));
-    var material = new THREE.LineBasicMaterial({
-      color: 0xffffff,
-      linewidth: 4,
-      transparent: true
-    });
-    this.line = new THREE.Line(geometry, material);
-    scene.add(this.line);
-    // this is not necessary because we only select in fullscreen mode
-    // document.addEventListener('mousemove', event => {
-    //   const width = this._ui.offsetWidth;
-    //   const height = this._ui.offsetHeight;
-    //   event.preventDefault();
-    //   mouse.x = (event.clientX / width) * 2 - 1;
-    //   mouse.y = -(event.clientY / height) * 2 + 1;
-    //   console.log(`mouse: ${mouse.x},${mouse.y}`);
-    // }, false);
+    this._highlight = new Highlight(this._camera);
+    this._highlight.enabled = false;
+    this.scene.add(this._highlight);
 
+    window.addEventListener('mousedown', function(event) {
+        event.preventDefault();
+        switch (event.which) {
+        case 1:
+          console.log('left');
+          break;
+        case 2:
+          console.log('middle');
+          break;
+        case 3:
+          console.log('right');
+          break;
+        }
+        console.log('down!', event);
+        return false;
+    }, false);
   }
 
   drawScene() {
@@ -173,48 +180,48 @@ class Engine {
     this._renderer.render(this.scene, this._camera);
     this._renderer.clearDepth();
     this._renderer.render(this.sceneui, this._camera);
+    if (this.frameno < 10) {
+      console.log(`engine.drawScene: ${this.profiler.mark()}`);
+    }
   }
 
-  update() {
+  update(frameno) {
     const time = performance.now();
     const delta = (time - this._prevTime) / 1000;
-    this.controls.update(delta);
-    this.crosshair.update();
+    this.controls.update(delta, frameno);
+    this.crosshair.update(delta, frameno);
+    this._highlight.update(delta, frameno);
     this._prevTime = time;
+    if (this.frameno < 10) {
+      console.log(`engine.update: ${this.profiler.mark()}`);
+    }
   }
 
   animate() {
+    this.stats.begin();
+    if (this.frameno < 10) {
+      console.log(`engine.animate start: ${this.profiler.mark()}`);
+    }
+
     if (this._isRunning) {
       requestAnimationFrame(this.animate.bind(this));
     }
-    this.raycaster.setFromCamera(this.mouse, this._camera );
-    var intersects = this.raycaster.intersectObject(this.selectable);
 
-    if (intersects.length > 0) {
+    this.update(this.frameno);    // Update Objects
+    this.frameno++;
+    this.drawScene(); // Draw the objects
 
-      var intersect = intersects[0];
-      var face = intersect.face;
-
-      var linePosition = this.line.geometry.attributes.position;
-      var meshPosition = this.selectable.geometry.attributes.position;
-
-      linePosition.copyAt(0, meshPosition, face.a);
-      linePosition.copyAt(1, meshPosition, face.b);
-      linePosition.copyAt(2, meshPosition, face.c);
-      linePosition.copyAt(3, meshPosition, face.a);
-      this.selectable.updateMatrix();
-      this.line.geometry.applyMatrix(this.selectable.matrix);
-      this.line.visible = true;
-    } else {
-      this.line.visible = false;
+    if (this.frameno < 10) {
+      console.log(`engine.animate end: ${this.profiler.mark()}`);
     }
 
-    this.update();    // Update Objects
-    this.drawScene(); // Draw the objects
+    this.stats.end();
   }
 
   start(options) {
+    console.log(`engine.start: ${this.profiler.mark()}`);
     this.initScene();
+    console.log(`engine.initScene: ${this.profiler.mark()}`);
     this._isRunning = true;
     this.animate();
   }
@@ -222,6 +229,11 @@ class Engine {
   stop() {
     this._isRunning = false;
   }
+
+  get highlight() {
+    return this._highlight;
+  }
+
 }
 
 export default Engine;
