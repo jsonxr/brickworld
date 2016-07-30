@@ -79,7 +79,6 @@ class Highlight extends THREE.LineSegments {
       if (frameno < 10) {
         debug.log('!this._selectableMesh', this);
       }
-      debug.log('nothing...');
       return;
     }
 
@@ -90,10 +89,8 @@ class Highlight extends THREE.LineSegments {
       this.visible = this.enabled && true;
       this.intersect = intersects[0];
       if (this.intersect.faceIndex !== this._faceIndex) {
-        debug.log(this.intersect);
         // rollOverMesh.position.copy( this.intersect.point ).add( this.intersect.face.normal );
         this._faceIndex = this.intersect.faceIndex;
-        console.log(this._faceIndex);
 
         var linePosition = this.lines.geometry.attributes.position;
         this.onSelection(this.intersect, linePosition);

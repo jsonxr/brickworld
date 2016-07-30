@@ -102,7 +102,6 @@ class MyGame extends Engine {
     this.highlight.selectable = selectable;
     this.highlight.onSelection = (intersect, positions) => {
       let linestodraw = chunk.getHighlightFromFaceIndex(intersect.faceIndex);
-      console.log(linestodraw.uuid);
       positions.array.set(linestodraw.attributes.position.array);
     }
 
