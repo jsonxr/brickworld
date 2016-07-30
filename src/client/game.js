@@ -57,17 +57,21 @@ class MyGame extends Engine {
 
     var color, b2;
     var colors = ['#0055BF', '#257A3E', '#F2CD37', '#F2705E'];
-    for (let i = 0; i < 80; i++) {
-      for (let j = 0; j < 80; j++) {
-        if (i < 4) {
+    for (let i = -8; i < 8; i++) {
+      for (let j = 0; j < 30; j++) {
+        if (i >= 0 && i < 4) {
           color = colors[i];
         } else {
           let colorIndex = Math.floor(Math.random() * 4);
-          color = colors[colorIndex];        }
-        b2 = new Brick({ width: 2, depth: 4, height: 3, color: color, position: [j*40,i * 24, 0]});
+          color = colors[colorIndex];
+        }
+        b2 = new Brick({ width: 1, depth: 4, height: 3, color: color, position: [i*40 + 10,j * 24, 0]});
         chunk.add(b2);
       }
     }
+    
+    b2 = new Brick({ width: 2, depth: 4, height: 1, color: '#F2705E', position: [-40,0, 80]});
+    chunk.add(b2);
 
     console.log(`create bricks: ${this.profiler.mark()}`);
 

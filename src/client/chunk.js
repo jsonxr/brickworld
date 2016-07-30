@@ -1,4 +1,4 @@
-const MAX_VERTICES = 80000 * 3;
+const MAX_VERTICES = 100000 * 3;
 
 class Chunk {
   constructor() {
@@ -115,8 +115,6 @@ class Chunk {
       //      instead of creating an entire box for each brick
       let outline = new THREE.EdgesGeometry(geometry, 0.1);
       outline.uuid = brick.uuid;
-      console.log('adding selectable brick: ', brick);
-      console.log('start: ', startFace, ' stop: ', stopFace);
       for (let i = startFace; i <= stopFace; i++) {
         this.selectables[i] = outline;
       }

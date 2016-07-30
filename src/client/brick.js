@@ -64,7 +64,7 @@ class Brick {
 
 
   getStudGeometry() {
-    const RADIUS_SEGMENTS = 16;
+    const RADIUS_SEGMENTS = 8;
     let studCount = this.options.width * this.options.depth;
     let verticexCount = studCount * RADIUS_SEGMENTS * 4 * 3; // 1 top triangle, 1 bottom 
                                                              // triangle, 2 triangles on side

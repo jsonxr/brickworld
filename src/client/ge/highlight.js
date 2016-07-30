@@ -8,7 +8,7 @@ let debug = console;
 class Highlight extends THREE.LineSegments {
   constructor(camera, options = {}) {
     // Defaults
-    options.distance = (options.distance !== undefined) ? options.distance : 160; // 8 bricks
+    options.distance = (options.distance !== undefined) ? options.distance : 200; // 10 bricks
     options.color = (options.color !== undefined) ? options.color : 0xffffff;
     options.lineWidth = (options.lineWidth !== undefined) ? options.lineWidth : 4;
     options.domElement = options.domElement || window;
