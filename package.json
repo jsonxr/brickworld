@@ -6,7 +6,15 @@
   "private": true,
   "scripts": {
     "start": "npm install && gulp",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require test/helper.js --recursive"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "transform-async-to-generator"
+    ]
   },
   "repository": {
     "type": "git",
@@ -17,9 +25,13 @@
   },
   "homepage": "https://github.com/jsonxr/brickworld",
   "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-core": "^6.17.0",
     "babel-plugin-transform-async-to-generator": "^6.8.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.10.3",
     "babel-plugin-transform-es2015-modules-systemjs": "^6.9.0",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
     "browser-sync": "^2.13.0",
     "del": "^2.2.1",
     "eslint": "^3.7.1",
@@ -39,9 +51,10 @@
     "gulp-jsdoc3": "^1.0.0",
     "gulp-print": "^2.0.1",
     "gulp-sass": "^2.3.2",
-    "gulp-sourcemaps": "^1.6.0",
+    "gulp-sourcemaps": "^2.1.1",
     "gulp-watch": "^4.3.8",
     "ldraw": "^0.1.1",
+    "mocha": "^3.1.2",
     "server-sync": "^1.0.0",
     "systemjs": "^0.19.31",
     "three": "^0.81.2",
@@ -57,6 +70,6 @@
     "serve-favicon": "^2.3.0",
     "source-map-support": "^0.4.2",
     "winston": "^2.2.0",
-    "yargs": "^4.8.1"
+    "yargs": "^6.1.1"
   }
 }

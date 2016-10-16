@@ -8,15 +8,15 @@ import Crosshair from './crosshair';
 import Highlight from './highlight';
 
 
-function _fullscreenPolyfill(ui, fn, me) {
+function _fullscreenPolyfill(ui, fn) {
   ui.requestFullscreen = ui.requestFullscreen ||
                          ui.webkitRequestFullscreen || // Polyfill
                          ui.msRequestFullscreen ||     // Polyfill
                          ui.mozRequestFullScreen;      // Polyfill
   // Polyfills for fullscreen api. When this is fully supported, these below are not necessary
-  document.addEventListener('webkitfullscreenchange', fn.bind(me));
-  document.addEventListener('msfullscreenchange', fn.bind(me));
-  document.addEventListener('mozfullscreenchange', fn.bind(me));
+  document.addEventListener('webkitfullscreenchange', fn);
+  document.addEventListener('msfullscreenchange', fn);
+  document.addEventListener('mozfullscreenchange', fn);
 }
 
 /**
@@ -24,7 +24,6 @@ function _fullscreenPolyfill(ui, fn, me) {
  * @memberOf client/ge
  */
 class Engine {
-
   /**
    * @constructor
    */
@@ -88,7 +87,7 @@ class Engine {
 
     // Polyfill for fullscreen api
     document.addEventListener('fullscreenchange', this._fullscreenChange.bind(this));
-    _fullscreenPolyfill(this._ui, this._fullscreenChange, this);
+    _fullscreenPolyfill(this._ui, this._fullscreenChange.bind(this));
   }
 
   requestFullscreen() {

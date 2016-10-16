@@ -9,6 +9,7 @@
   },
   "rules": {
     "max-len": ["error", { "code": 120 }],
+    "no-bitwise": "off",
     "no-console": "off",
     "no-param-reassign": "off",
     "no-plusplus": "off",

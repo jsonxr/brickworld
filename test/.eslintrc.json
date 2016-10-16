@@ -1,0 +1,9 @@
+{
+  "extends": "airbnb",
+  "globals": {
+    "describe": "off",
+    "it": "off"
+  },
+  "rules": {
+  }
+}

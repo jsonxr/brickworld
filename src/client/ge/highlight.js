@@ -137,6 +137,7 @@ class Highlight extends THREE.LineSegments {
    * @param positions
    */
   onSelection(intersect, positions) {
+    console.log('onSelection!')
     const face = this.intersect.face;
     const meshPosition = this._selectableMesh.geometry.attributes.position;
     positions.copyAt(0, meshPosition, face.a);

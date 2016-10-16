@@ -4,7 +4,7 @@ import Bricks from './bricks';
 /**
  * Brick loads it's information from a part number.
  */
-class BrickInstance {
+class BrickPart {
   constructor(options) {
     this.part = options.part;
     this.template = Bricks[options.part];
@@ -65,5 +65,5 @@ class BrickInstance {
 }
 
 export {
-  BrickInstance as default,
-}
+  BrickPart as default,
+};

@@ -2,7 +2,7 @@ import Engine from './ge/engine';
 // import Mesh from './ge/mesh';
 // import Scene from './ge/scene';
 import Brick from './game/brick';
-import BrickInstance from './game/brick-instance';
+import BrickPart from './game/brick-part';
 import Chunk from './game/chunk';
 
 class MyGame extends Engine {
@@ -113,7 +113,7 @@ class MyGame extends Engine {
     });
     chunk.add(b2);
 
-    b2 = new BrickInstance({
+    b2 = new BrickPart({
       part: '3001',
       color: '#C91A09',
       position: [0, 0, 120],
@@ -146,6 +146,7 @@ class MyGame extends Engine {
     this.highlight.selectable = chunk.getSelectable();
     this.highlight.onSelection = (intersect, positions) => {
       const linestodraw = chunk.getHighlightFromFaceIndex(intersect.faceIndex);
+      console.log(`faceIndex: ${intersect.faceIndex}`);
       positions.array.set(linestodraw.attributes.position.array);
     };
   }
@@ -154,6 +155,7 @@ class MyGame extends Engine {
 /**
  * Called when fullscreen mode changes
  * @param {object} event - the event passed in by fullscreen
+ * @private
 */
 function logFullscreenChange(event) {
   // The event object doesn't carry information about the fullscreen state of the browser,
@@ -181,24 +183,6 @@ document.addEventListener('pointerlockchange', (event) => {
   console.log('pointerlockchange: ', event);
   console.log(pointerLockElement);
 });
-//
-// (function() {
-//   document.addEventListener('visibilitychange', onchange);
-//   function onchange(evt) {
-//     const v = 'visible';
-//     const h = 'hidden';
-//         evtMap = {
-//           focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h
-//         };
-//
-//     console.log('onchange', evt);
-//   }
-//
-//   // set the initial state (but only if browser supports the Page Visibility API)
-//   if( document[hidden] !== undefined )
-//     onchange({type: document[hidden] ? 'blur' : 'focus'});
-// })();
-
 
 window.game = new MyGame();
 setTimeout(() => { // Ensure we can fail in a source map friendly place (not index.html)
