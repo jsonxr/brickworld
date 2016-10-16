@@ -1,7 +1,45 @@
+const PI_2 = Math.PI / 2;
+
+class PointerLockControl extends THREE.Object3D {
+
+  constructor(camera) {
+    super();
+    // Camera is child of pitch
+    this.pitchObject = new THREE.Object3D();
+    this.pitchObject.add(camera);
+
+    this.position.y = 10;
+    // Pitch is child of the yaw object
+    this.add(this.pitchObject);
+    this.enabled = false;
+    this.onMouseMove = this.doMouseMove.bind(this);
+    document.addEventListener('mousemove', this.onMouseMove, false);
+    this._direction = new THREE.Vector3(0, 0, -1);
+    this._rotation = new THREE.Euler(0, 0, 0, 'YXZ');
+  }
+
+  doMouseMove(event) {
+    if (this.enabled === false) return;
+    this.rotation.y -= event.movementX * 0.002;
+    this.pitchObject.rotation.x -= event.movementY * 0.002;
+    this.pitchObject.rotation.x = Math.max(-PI_2, Math.min(PI_2, this.pitchObject.rotation.x));
+  }
+
+  dispose() {
+    document.removeEventListener('mousemove', this.onMouseMove, false);
+  }
+
+  getDirection(v) {
+    this._rotation.set(this.pitchObject.rotation.x, this.rotation.y, 0);
+    v.copy(this._direction).applyEuler(this._rotation);
+    return v;
+  }
+}
+
 /**
  * Controls while in web browser full screen mode.
  */
-class FirstPersonControls {
+class FirstPersonControls extends PointerLockControl {
 
   /**
    *
@@ -9,7 +47,7 @@ class FirstPersonControls {
    * @param camera
    */
   constructor(camera) {
-    this.controls = new THREE.PointerLockControls(camera);
+    super(camera);
     this.velocity = new THREE.Vector3();
     this.speed = 293;
     this.jumpSpeed = 350;
@@ -100,55 +138,7 @@ class FirstPersonControls {
       return false;
     }, false);
 
-    this.controls.enabled = false;
-  }
-
-  /**
-   *
-   * @returns {*|Array|THREE.Vector3}
-   */
-  get position() {
-    return this.controls.getObject().position;
-  }
-
-  /**
-   *
-   * @param {*|Array|THREE.Vector3} vec
-   */
-  set position(vec) {
-    this.controls.getObject().position.set(vec.x, vec.y, vec.z);
-  }
-
-  /**
-   *
-   * @returns {boolean}
-   */
-  get enabled() {
-    return this.controls.enabled;
-  }
-
-  /**
-   *
-   * @param {boolean} value
-   */
-  set enabled(value) {
-    if (!value) {
-      this.moveForward = false;
-      this.moveBackward = false;
-      this.moveLeft = false;
-      this.moveRight = false;
-      this.moveUp = false;
-      this.moveDown = false;
-    }
-    this.controls.enabled = value;
-  }
-
-  /**
-   *
-   * @returns {*}
-   */
-  getObject() {
-    return this.controls.getObject();
+    this.enabled = false;
   }
 
   /**
@@ -181,9 +171,9 @@ class FirstPersonControls {
       //   canJump = true;
       // }
 
-      this.controls.getObject().translateX(this.velocity.x * delta);
-      this.controls.getObject().translateY(this.velocity.y * delta);
-      this.controls.getObject().translateZ(this.velocity.z * delta);
+      this.translateX(this.velocity.x * delta);
+      this.translateY(this.velocity.y * delta);
+      this.translateZ(this.velocity.z * delta);
 
       // if (controls.getObject().position.y < 10) {
       //

@@ -174,7 +174,7 @@ class Engine {
     // FirstPerson Perspective
     this.controls = new FirstPersonControls(this._camera);
     this.controls.position.set(0, 88, 20 * 15); // Set starting position
-    this.scene.add(this.controls.getObject());
+    this.scene.add(this.controls);
 
     // This is used for selecting geometry...
     this._highlight = new Highlight(this._camera);

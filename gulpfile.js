@@ -40,8 +40,6 @@ const LIBS_SRC = [
   'node_modules/three/examples/js/Detector.js',
   'node_modules/three/examples/js/libs/stats.min.js',
   'node_modules/three/examples/js/libs/dat.gui.min.js',
-  'node_modules/three/examples/js/controls/PointerLockControls.js',
-  'node_modules/three/examples/js/controls/FirstPersonControls.js',
 ];
 
 // Javascript compile...
