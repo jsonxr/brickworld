@@ -1,4 +1,6 @@
-'use strict'
+/**
+ * @module client/ge
+ */
 
 import Profiler from './profiler';
 import FirstPersonControls from './first-person-controls';
@@ -17,8 +19,15 @@ function _fullscreenPolyfill(ui, fn, me) {
   document.addEventListener('mozfullscreenchange', fn.bind(me));
 }
 
+/**
+ * Handles working with the browser
+ * @memberOf client/ge
+ */
 class Engine {
 
+  /**
+   * @constructor
+   */
   constructor() {
     this._isRunning = false;
     this._ui = false;
@@ -29,22 +38,37 @@ class Engine {
     this._prevTime = performance.now();
     this._highlight = null;
     this.frameno = 0;
+    this.focused = true;
+
+    // This handles when user cmd-tab away from fullscreen
+    window.onfocus = () => {
+      this.focused = true;
+      console.log('window.onfocus');
+      this._fullscreenChange();
+    };
+    window.onblur = () => {
+      this.focused = false;
+      console.log('window.onblur');
+      this._fullscreenChange();
+    };
   }
   //--------------------------------------------------------------------------
   // Windowing, Fullscreen, Pointerlock
   //--------------------------------------------------------------------------
 
-  _fullscreenChange(event) {
+  _fullscreenChange() {
     const element = document.fullscreenElement ||
                     document.webkitFullscreenElement ||
                     document.mozFullScreenElement ||
                     document.msFullscreenElement;
     this.onWindowResize();
-    if (element) {
+    if (this.focused && element) {
+      //document.body.className = 'focused';
       element.requestPointerLock();
       this.controls.enabled = true;
       this._highlight.enabled = true;
     } else {
+      //document.body.className = 'blurred';
       this.controls.enabled = false;
       this._highlight.enabled = false;
     }
@@ -63,12 +87,11 @@ class Engine {
     this._ui.addEventListener('click', this.requestFullscreen.bind(this), false);
 
     // Polyfill for fullscreen api
-    this._ui.requestFullscreen = this._ui.requestFullscreen;
     document.addEventListener('fullscreenchange', this._fullscreenChange.bind(this));
     _fullscreenPolyfill(this._ui, this._fullscreenChange, this);
   }
 
-  requestFullscreen(event) {    
+  requestFullscreen() {
     this._ui.requestFullscreen();
   }
 
@@ -77,7 +100,7 @@ class Engine {
       const width = this._ui.offsetWidth;
       const height = this._ui.offsetHeight;
       this._renderer.setSize(width, height);
-      this._camera.aspect = 1.0 * width / height;
+      this._camera.aspect = (width / height);
       this._camera.updateProjectionMatrix();
     }
   }
@@ -87,17 +110,17 @@ class Engine {
   //--------------------------------------------------------------------------
 
   initScene(
-    options = { 
-      camera: { 
+    options = {
+      camera: {
         fov: 70,
-        near: 1, 
-        far: 10000
-      }
+        near: 1,
+        far: 10000,
+      },
     }
   ) {
-    const width = this._ui.offsetWidth,
-          height = this._ui.offsetHeight,
-          aspectRatio = width/height;
+    const width = this._ui.offsetWidth;
+    const height = this._ui.offsetHeight;
+    const aspectRatio = width / height;
 
     //----------------------------------
     // Scene
@@ -132,23 +155,24 @@ class Engine {
     //----------------------------------
     this._renderer = new THREE.WebGLRenderer();
     this._renderer.setSize(width, height);
-    this._renderer.setClearColor( 0x0f0f0f );
+    this._renderer.setClearColor(0x0f0f0f);
     this._renderer.setPixelRatio(window.devicePixelRatio);
     this._renderer.autoClear = false;
     this._ui.appendChild(this._renderer.domElement);
 
     // FPS stats
     this.stats = new Stats();
+    this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
     this._ui.appendChild(this.stats.dom);
 
     // Grid
     const size = 16 * 20; // 20LDU units x 16 studs
     const step = 32;
-    const gridHelper = new THREE.GridHelper( size, step );
+    const gridHelper = new THREE.GridHelper(size, step);
     this.scene.add(gridHelper);
-    
+
     // FirstPerson Perspective
-    this.controls = new FirstPersonControls(this._camera);  
+    this.controls = new FirstPersonControls(this._camera);
     this.controls.position.set(0, 88, 20 * 15); // Set starting position
     this.scene.add(this.controls.getObject());
 
@@ -156,23 +180,6 @@ class Engine {
     this._highlight = new Highlight(this._camera);
     this._highlight.enabled = false;
     this.scene.add(this._highlight);
-
-    window.addEventListener('mousedown', function(event) {
-        event.preventDefault();
-        switch (event.which) {
-        case 1:
-          console.log('left');
-          break;
-        case 2:
-          console.log('middle');
-          break;
-        case 3:
-          console.log('right');
-          break;
-        }
-        console.log('down!', event);
-        return false;
-    }, false);
   }
 
   drawScene() {
@@ -188,7 +195,7 @@ class Engine {
   update(frameno) {
     const time = performance.now();
     const delta = (time - this._prevTime) / 1000;
-    this.controls.update(delta, frameno);
+    this.controls.update(delta);
     this.crosshair.update(delta, frameno);
     this._highlight.update(delta, frameno);
     this._prevTime = time;
@@ -204,7 +211,7 @@ class Engine {
     }
 
     if (this._isRunning) {
-      requestAnimationFrame(this.animate.bind(this));
+      window.requestAnimationFrame(this.animate.bind(this));
     }
 
     this.update(this.frameno);    // Update Objects
@@ -218,7 +225,7 @@ class Engine {
     this.stats.end();
   }
 
-  start(options) {
+  start() {
     console.log(`engine.start: ${this.profiler.mark()}`);
     this.initScene();
     console.log(`engine.initScene: ${this.profiler.mark()}`);

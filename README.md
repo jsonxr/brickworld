@@ -19,7 +19,22 @@ Technical:
 * node 6.2
 * Cassandra?
 
+Technologies not implemented in all browsers:
+* SharedArrayBuffer - 
+  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+* Atomics - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics
+* webgl2 - https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext
+* fullscreen api - https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+* pointer lock - https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
+* es6 - 
+
 Resources:
+
+* Static Memory Javascript - http://www.html5rocks.com/en/tutorials/speed/static-mem-pools/
+
+* Comparing colors - http://stackoverflow.com/questions/4057475/rounding-colour-values-to-the-nearest-of-a-small-set-of-colours
+  https://github.com/dtao/nearest-color
+  https://github.com/markusn/color-diff <- This one is probably best!
 
 * https://twgljs.org/
 
@@ -50,7 +65,8 @@ https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Building
 * http://forums.ldraw.org/showthread.php?tid=14432&pid=14432#pid14432 - new ldraw file format discussion
 
 
-
+* BufferAttributes memory layout - https://github.com/mrdoob/three.js/issues/6877
+* Cylinder UV - http://stackoverflow.com/questions/8315546/texturing-a-cylinder-in-three-js
 
 # running
 

@@ -1,6 +1,10 @@
+// import colors from './colors';
+import BrickTemplate from './brick-template';
+
 const VECTORS_PER_TRIANGLE = 3;
 const VALUES_PER_VECTOR = 3;
 const TRIANGLES_PER_CUBE = 12;
+const RADIUS_SEGMENTS = 16;
 
 
 // Scale: 1 unit = 5/16" = 20 LDU
@@ -27,11 +31,28 @@ const TRIANGLES_PER_CUBE = 12;
 //        5 mi/hr * (1/48 scale * 5280 ft/mi * 12 inch/ft * 64 inch/LDU) / (1hr * 60min/hr * 60sec/min) = LDU/sec = 117
 
 //
-const blockGap = 1/4;
+const blockGap = 1 / 4;
+
+
+// const geometries =
+
+
+const Bricks = {};
+Bricks['3001'] = new BrickTemplate({ name: 'Brick 2x4', width: 2, depth: 4, height: 3 });
+Bricks['3002'] = new BrickTemplate({ name: 'Brick 2x3', width: 2, depth: 3, height: 3 });
+// Bricks[3003] = new BrickTemplate({ name: 'Brick 2x2', width: 2, depth: 2, height: 3});
+// Bricks[3004] = new BrickTemplate({ name: 'Brick 1x2', width: 1, depth: 2, height: 3});
+// Bricks[3005] = new BrickTemplate({ name: 'Brick 1x1', width: 1, depth: 2, height: 3});
+// Bricks[3006] = new BrickTemplate({ name: 'Brick 2x10', width: 2, depth: 10, height: 3});
+// Bricks[3007] = new BrickTemplate({ name: 'Brick 2x8', width: 2, depth: 8, height: 3});
+// Bricks[3008] = new BrickTemplate({ name: 'Brick 1x8', width: 1, depth: 8, height: 3});
+// Bricks[3009] = new BrickTemplate({ name: 'Brick 1x6', width: 1, depth: 6, height: 3});
+// Bricks[3010] = new BrickTemplate({ name: 'Brick 1x4', width: 1, depth: 4, height: 3});
+// Bricks[3622] = new BrickTemplate({ name: 'Brick 1x3', width: 1, depth: 3, height: 3});
 
 class Brick {
-  constructor(options = { width: 2, depth: 4, height: 3, color: '#f0f0f0', position: [0,0,0]}) {
-    this.uuid = THREE.Math.generateUUID();
+  constructor(options = { width: 2, depth: 4, height: 3, color: '#f0f0f0', position: [0, 0, 0] }) {
+    // this.uuid = THREE.Math.generateUUID();
     this.color = new THREE.Color(options.color);
     this.options = options;
     this.position = new THREE.Vector3(options.position[0],
@@ -39,64 +60,81 @@ class Brick {
                                       options.position[2]);
   }
 
-  get triangles() {
-    return 12;
+  // get triangles() {
+  //   return 12;
+  // }
+
+  get geometry() {
+    if (!this._geometry) {
+      this._geometry = this.getBufferGeometry();
+    }
+    return this._geometry;
+  }
+
+  get outline() {
+    if (!this._outline) {
+      this._outline = new THREE.EdgesGeometry(this.geometry, 0.1);
+    }
+    return this._outline;
   }
 
   getBufferGeometry() {
-    var geometry = new THREE.BoxBufferGeometry(this.options.width * 20 - blockGap,
-                                               this.options.height * 8 - blockGap,
-                                               this.options.depth * 20 - blockGap).toNonIndexed();
-    const colors = new Float32Array( TRIANGLES_PER_CUBE * VECTORS_PER_TRIANGLE * VALUES_PER_VECTOR);
-    for (let i = 0; i < colors.length; i = i + 3) {
-      colors[i + 0] = this.color.r;
+    const geometry = new THREE.BoxBufferGeometry(
+      (this.options.width * 20) - blockGap,
+      (this.options.height * 8) - blockGap,
+      (this.options.depth * 20) - blockGap
+    ).toNonIndexed();
+    const colors = new Float32Array(TRIANGLES_PER_CUBE * VECTORS_PER_TRIANGLE * VALUES_PER_VECTOR);
+    for (let i = 0; i < colors.length; i += 3) {
+      colors[i] = this.color.r;
       colors[i + 1] = this.color.g;
       colors[i + 2] = this.color.b;
     }
     geometry.addAttribute('color', new THREE.BufferAttribute(colors, VECTORS_PER_TRIANGLE));
     geometry.removeAttribute('uv');
     // Make it sit on the ground at x,y,z
-    geometry.translate(this.position.x,
-                       this.position.y + this.options.height * 4 + (blockGap / 2),
-                       this.position.z);
+    geometry.translate(0, (this.options.height * 4) + (blockGap / 2), 0);
+
+    // geometry position in the world...
+    geometry.translate(this.position.x, this.position.y, this.position.z);
+
     return geometry;
   }
 
 
   getStudGeometry() {
-    const RADIUS_SEGMENTS = 8;
-    let studCount = this.options.width * this.options.depth;
-    let verticexCount = studCount * RADIUS_SEGMENTS * 4 * 3; // 1 top triangle, 1 bottom 
+    const studCount = this.options.width * this.options.depth;
+    const verticexCount = studCount * RADIUS_SEGMENTS * 4 * 3; // 1 top
+    // triangle, 1 bottom
                                                              // triangle, 2 triangles on side
 
-    var studs = new THREE.BufferGeometry();
+    const studs = new THREE.BufferGeometry();
     // Per Vertex Colors
     const colors = new Float32Array(verticexCount * 3); // 3 floats per vertex
-    for (let i = 0; i < colors.length; i = i + 3) {
-      colors[i + 0] = this.color.r;
+    studs.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+    for (let i = 0; i < colors.length; i += 3) {
+      colors[i] = this.color.r;
       colors[i + 1] = this.color.g;
       colors[i + 2] = this.color.b;
     }
-    studs.addAttribute('color', new THREE.BufferAttribute(colors, 3));
     // Positions
     const vertices = new Float32Array(verticexCount * 3);
-    studs.addAttribute( 'position', new THREE.BufferAttribute(vertices, 3));
+    studs.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
     // Normals
     const normals = new Float32Array(verticexCount * 3);
-    studs.addAttribute( 'normal', new THREE.BufferAttribute(normals, 3));
+    studs.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
 
-    var geo = null;
     let offset = 0;
-    let blockHeight = 8;
-    let blockWidth = 20;
-    let studHeight = 4;
-    let y = (studHeight / 2) + blockHeight * this.options.height;
-    for (let i = 0; i < this.options.width; i++ ) {
-      let x = (-blockWidth/2 * this.options.width + blockWidth/2) + blockWidth * i;
+    const blockHeight = 8;
+    const blockWidth = 20;
+    const studHeight = 4;
+    const y = (studHeight / 2) + (blockHeight * this.options.height);
+    for (let i = 0; i < this.options.width; i++) {
+      const x = (((-blockWidth / 2) * this.options.width) + (blockWidth / 2)) + (blockWidth * i);
       for (let j = 0; j < this.options.depth; j++) {
-        let z = (-blockWidth/2 * this.options.depth + blockWidth/2) + blockWidth * j;
-        var geometry = (new THREE.CylinderBufferGeometry(6, 6, 4, RADIUS_SEGMENTS)).toNonIndexed();
-        geometry.translate(x,y,z);
+        const z = (((-blockWidth / 2) * this.options.depth) + (blockWidth / 2)) + (blockWidth * j);
+        const geometry = (new THREE.CylinderBufferGeometry(6, 6, 4, RADIUS_SEGMENTS)).toNonIndexed();
+        geometry.translate(x, y, z);
         studs.merge(geometry, offset);
         offset += geometry.getAttribute('position').count;
       }
@@ -110,13 +148,12 @@ class Brick {
     return this.getBufferGeometry();
   }
 
-  getHighlight() {
-    return new THREE.EdgesGeometry( this.getBufferGeometry(), 0.1);
-  }
-
 }
 
-export default Brick;
+
+export {
+  Brick as default
+};
 
 
 /*
@@ -155,7 +192,10 @@ var Block = function Block(params) {
 }
 
 Block.prototype.brickGeometry = function brickGeometry() {
-    var geometry = new THREE.CubeGeometry(blockWidth*this.width - blockGap, blockHeight * this.height, blockWidth*this.length - blockGap);
+    var geometry = new THREE.CubeGeometry(
+    blockWidth*this.width - blockGap,
+    blockHeight * this.height,
+    blockWidth*this.length - blockGap);
     geometry.applyMatrix(new THREE.Matrix4().makeTranslation(
         ((blockWidth * this.width) / 2) + this.location[X_IDX],
         ((blockHeight * this.height) / 2) + this.location[Y_IDX],

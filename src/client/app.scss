@@ -19,6 +19,12 @@ body {
   height:100%;
 }
 
+#command {
+  position: absolute;
+  left: 50px;
+  top: 600px;
+  background-color: #ffffff;
+}
 
 canvas {
   margin:0;

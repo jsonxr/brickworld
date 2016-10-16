@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
+  <title>Brickworld</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -22,7 +23,7 @@
   <meta name="msapplication-TileImage" content="/img/favicons/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 
-  <!-- inject:js -->
+  <!-- vendor:js -->
   <!-- endinject -->
 
   <link rel="stylesheet" type="text/css" href="app.css">
@@ -65,7 +66,9 @@
     }
   </script>
 
-  <div id="ui"></div>
+  <div id="ui">
+    <input id="command" value="hi">
+  </div>
   <script>
   // set our baseURL reference path
   System.config({

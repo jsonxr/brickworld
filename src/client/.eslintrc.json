@@ -1,0 +1,18 @@
+{
+  "extends": "airbnb",
+  "globals": {
+    "document": true,
+    "performance": true,
+    "Stats": true,
+    "THREE": true,
+    "window": true
+  },
+  "rules": {
+    "max-len": ["error", { "code": 120 }],
+    "no-console": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "no-underscore-dangle": "off",
+    "spaced-comment": "off"
+  }
+}

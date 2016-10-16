@@ -1,25 +1,43 @@
+/**
+ *
+ * @memberOf client/ge
+ */
 class Profiler {
 
+  /**
+   *
+   */
   constructor() {
-    this.start = self.performance.now();
+    this.start = performance.now();
     this.last = this.start;
     this.elapsed = 0;
   }
 
+  /**
+   *
+   * @returns {number}
+   */
   mark() {
-    const now = self.performance.now();
+    const now = performance.now();
     const diff = now - this.last;
     this.last = now;
     return diff;
   }
 
+  /**
+   *
+   * @returns {number}
+   */
   elapsed() {
-    const now = self.performance.now();
-    return now - start;
+    const now = performance.now();
+    return now - this.start;
   }
 
+  /**
+   *
+   */
   reset() {
-    this.startTime = self.performance.now();
+    this.startTime = performance.now();
     this.stopTime = this.startTime;
     this.elapsedTime = 0;
   }

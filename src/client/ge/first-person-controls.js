@@ -1,5 +1,15 @@
+/**
+ * Controls while in web browser full screen mode.
+ */
 class FirstPersonControls {
+
+  /**
+   *
+   * @memberOf client/ge
+   * @param camera
+   */
   constructor(camera) {
+    this.controls = new THREE.PointerLockControls(camera);
     this.velocity = new THREE.Vector3();
     this.speed = 293;
     this.jumpSpeed = 350;
@@ -8,7 +18,7 @@ class FirstPersonControls {
     this.moveBackward = false;
     this.moveRight = false;
 
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
         case 38: // up
         case 87: // w
@@ -38,69 +48,115 @@ class FirstPersonControls {
           }
           this.canJump = false;
           break;
+        default:
+          break;
       }
     }, false);
 
-    document.addEventListener('keyup', event => {
+    document.addEventListener('keyup', (event) => {
       switch (event.keyCode) {
         case 38: // up
         case 87: // w
           this.moveForward = false;
           break;
-        case 37: // left
-        case 65: // a
-          this.moveLeft = false;
-          break;
         case 40: // down
         case 83: // s
           this.moveBackward = false;
+          break;
+        case 37: // left
+        case 65: // a
+          this.moveLeft = false;
           break;
         case 39: // right
         case 68: // d
           this.moveRight = false;
           break;
-        case 33:
+        case 33: // pg-up
           this.moveUp = false;
           break;
-        case 34:
+        case 34: // pg-down
           this.moveDown = false;
+          break;
+        default:
           break;
       }
     }, false);
 
-    this.controls = new THREE.PointerLockControls(camera);
+    window.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+      switch (event.which) {
+        case 1:
+          console.log('left');
+          break;
+        case 2:
+          console.log('middle');
+          break;
+        case 3:
+          console.log('right');
+          break;
+        default:
+          console.log('??? mousedown: ', event);
+      }
+      return false;
+    }, false);
+
     this.controls.enabled = false;
   }
 
-  //----------------
-  // position
-  //----------------
+  /**
+   *
+   * @returns {*|Array|THREE.Vector3}
+   */
   get position() {
     return this.controls.getObject().position;
   }
 
+  /**
+   *
+   * @param {*|Array|THREE.Vector3} vec
+   */
   set position(vec) {
     this.controls.getObject().position.set(vec.x, vec.y, vec.z);
   }
 
-  //----------------
-  // enabled
-  //----------------
+  /**
+   *
+   * @returns {boolean}
+   */
   get enabled() {
     return this.controls.enabled;
   }
 
+  /**
+   *
+   * @param {boolean} value
+   */
   set enabled(value) {
+    if (!value) {
+      this.moveForward = false;
+      this.moveBackward = false;
+      this.moveLeft = false;
+      this.moveRight = false;
+      this.moveUp = false;
+      this.moveDown = false;
+    }
     this.controls.enabled = value;
   }
 
+  /**
+   *
+   * @returns {*}
+   */
   getObject() {
     return this.controls.getObject();
   }
 
+  /**
+   *
+   * @param delta
+   */
   update(delta) {
     if (this.enabled) {
-
       // this.velocity.x -= this.velocity.x * 10.0 * delta;
       // this.velocity.z -= this.velocity.z * 10.0 * delta;
 
@@ -115,8 +171,8 @@ class FirstPersonControls {
       if (this.moveRight) this.velocity.x = this.speed;//  * delta;
       if (!this.moveLeft && !this.moveRight) this.velocity.x = 0;
 
-      if (this.moveUp) this.velocity.y = this.speed / 10;
-      if (this.moveDown) this.velocity.y = -this.speed / 10;
+      if (this.moveUp) this.velocity.y = this.speed;
+      if (this.moveDown) this.velocity.y = -this.speed;
       if (!this.moveUp && !this.moveDown) this.velocity.y = 0;
 
       // if (isOnObject === true) {
