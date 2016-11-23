@@ -136,6 +136,7 @@ class Chunk {
       //TODO: We should really use the same box for the same brick and translate to right place
       //      instead of creating an entire box for each brick
       for (let i = startFace; i <= stopFace; i++) {
+        //TODO: Use face-list.js which handles left/right face selection?
         this.selectables[i] = brick;
       }
 
@@ -151,8 +152,11 @@ class Chunk {
    * @returns {*}
    */
   getHighlightFromFaceIndex(index) {
-    const outline = this.selectables[index].outline;
-    return outline;
+    if (index < this.selectables.length) {
+      const outline = this.selectables[index].outline;
+      return outline;
+    }
+    return null;
   }
 
 }

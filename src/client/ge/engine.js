@@ -161,7 +161,7 @@ class Engine {
 
     // FPS stats
     this.stats = new Stats();
-    this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+    this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     this._ui.appendChild(this.stats.dom);
 
     // Grid

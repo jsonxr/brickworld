@@ -69,6 +69,22 @@ class Highlight extends THREE.LineSegments {
   }
 
   /**
+   * Get the faceIndex that was last intersected
+   * @returns {null|*}
+   */
+  get faceIndex() {
+    return this._faceIndex;
+  }
+
+  /**
+   * Set the points of the line
+   * @param value
+   */
+  setPositionsArray(value) {
+    this.geometry.attributes.position.array.set(value);
+  }
+
+  /**
    * If you want to highlight when not in fullscreen mode, the mouse moves
    * so the mouse coordinates are not the center of the screen as they
    * are in fullscreen mode.
@@ -119,15 +135,17 @@ class Highlight extends THREE.LineSegments {
         // rollOverMesh.position.copy( this.intersect.point ).add( this.intersect.face.normal );
         this._faceIndex = this.intersect.faceIndex;
 
-        const linePosition = this.lines.geometry.attributes.position;
-        this.onSelection(this.intersect, linePosition);
+        // const linePosition = this.lines.geometry.attributes.position;
+        // this.onSelection(this.intersect, linePosition);
 
+        // why do we have to update the matrix here?
         this._selectableMesh.updateMatrix();
         this.geometry.applyMatrix(this._selectableMesh.matrix);
       }
     } else {
       //this.visible = false;
       this.intersect = null;
+      this._faceIndex = null;
     }
   }
 

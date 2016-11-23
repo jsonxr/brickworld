@@ -49,9 +49,9 @@ class MyGame extends Engine {
 
     this.controls.position.set(0, 88, 20 * 3); // Set starting position
 
-    const chunk = new Chunk();
+    this.chunk = new Chunk();
     const b = new Brick({ width: 32, depth: 32, height: 0.5, color: '#9BA19D', position: [0, -4, 0] });
-    chunk.add(b);
+    this.chunk.add(b);
 
     let color;
     let b2;
@@ -100,7 +100,7 @@ class MyGame extends Engine {
           height: 1,
           color,
           position: [(i * 20) - 310, 0, (j * 20) - 310] });
-        chunk.add(b2);
+        this.chunk.add(b2);
       }
     }
 
@@ -111,17 +111,17 @@ class MyGame extends Engine {
       color: '#F2705E',
       position: [0, 0, 120],
     });
-    chunk.add(b2);
+    this.chunk.add(b2);
 
     b2 = new BrickPart({
       part: '3001',
       color: '#C91A09',
       position: [0, 0, 120],
     });
-    chunk.add(b2);
+    this.chunk.add(b2);
 
     // Get the main geometry
-    let g = chunk.getBufferGeometry();
+    let g = this.chunk.getBufferGeometry();
     console.log(`create chunk geometry: ${this.profiler.mark()}`);
     const bricks = new THREE.Mesh(g, m);
     bricks.name = 'Bricks';
@@ -130,7 +130,7 @@ class MyGame extends Engine {
     // this.scene.add(edges);
     console.log(`add bricks to scene: ${this.profiler.mark()}`);
 
-    g = chunk.getStudGeometry();
+    g = this.chunk.getStudGeometry();
     console.log(`create studs: ${this.profiler.mark()}`);
     const studs = new THREE.Mesh(g, m);
     studs.name = 'Studs';
@@ -143,12 +143,29 @@ class MyGame extends Engine {
       console.log(`game.initScene: ${this.profiler.mark()}`);
     }
 
-    this.highlight.selectable = chunk.getSelectable();
-    this.highlight.onSelection = (intersect, positions) => {
-      const linestodraw = chunk.getHighlightFromFaceIndex(intersect.faceIndex);
-      console.log(`faceIndex: ${intersect.faceIndex}`);
-      positions.array.set(linestodraw.attributes.position.array);
-    };
+    this.highlight.selectable = this.chunk.getSelectable();
+    // this.highlight.onSelection = (intersect, positions) => {
+    //   const linestodraw = this.chunk.getHighlightFromFaceIndex(intersect.faceIndex);
+    //   positions.array.set(linestodraw.attributes.position.array);
+    // };
+  }
+
+
+  update(frameNo) {
+    super.update(frameNo);
+    const faceIndex = this.highlight.faceIndex;
+    if (faceIndex) {
+      const linestodraw = this.chunk.getHighlightFromFaceIndex(faceIndex);
+      //TODO: get left/right node and compare to see if we need to update the
+      // lines to highlight.
+      if (linestodraw) {
+        this.highlight.visible = true;
+        //this.highlight.setPositionsArray(linestodraw.attributes.position.array);
+        this.highlight.geometry.attributes.position.array.set(linestodraw.attributes.position.array);
+      }
+    } else {
+      this.highlight.visible = false;
+    }
   }
 }
 
@@ -181,7 +198,7 @@ document.addEventListener('pointerlockchange', (event) => {
                              document.mozPointerLockElement ||
                              document.msPointerLockElement;
   console.log('pointerlockchange: ', event);
-  console.log(pointerLockElement);
+  console.log(`pointerLockElement: ${pointerLockElement}`);
 });
 
 window.game = new MyGame();
