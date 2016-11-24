@@ -1,4 +1,4 @@
-import assert from 'assert';
+import { assert } from 'chai';
 import FaceList from '../../src/shared/face-list';
 
 describe('shared/face-list', () => {

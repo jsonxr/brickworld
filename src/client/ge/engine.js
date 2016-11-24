@@ -36,7 +36,7 @@ class Engine {
     this._renderer = null;
     this.scene = null;
     this.profiler = new Profiler();
-    this._prevTime = performance.now();
+    this._prevTime = window.performance.now();
     this._highlight = null;
     this.frameno = 0;
     this.focused = true;
@@ -194,7 +194,7 @@ class Engine {
   }
 
   update(frameno) {
-    const time = performance.now();
+    const time = window.performance.now();
     const delta = (time - this._prevTime) / 1000;
     this.controls.update(delta);
     this.crosshair.update(delta, frameno);

@@ -1,3 +1,6 @@
+// node: process.hrtime()
+// browser: performance.now()
+
 /**
  *
  * @memberOf client/ge
