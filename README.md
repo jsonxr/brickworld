@@ -68,6 +68,8 @@ https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Building
 * BufferAttributes memory layout - https://github.com/mrdoob/three.js/issues/6877
 * Cylinder UV - http://stackoverflow.com/questions/8315546/texturing-a-cylinder-in-three-js
 
+* Imposters, skyboxes rendering node side... https://github.com/mrdoob/three.js/issues/7085
+
 # running
 
 

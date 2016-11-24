@@ -1,7 +1,7 @@
 import assert from 'assert';
-import FaceList from '../../src/client/face-list';
+import FaceList from '../../src/shared/face-list';
 
-describe('FaceList', () => {
+describe('shared/face-list', () => {
   const list = new FaceList();
 
   describe('#add()', () => {

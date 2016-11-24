@@ -1,3 +1,5 @@
+
+
 const MAX_VERTICES = 100000 * 3;
 
 /**

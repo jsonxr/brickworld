@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <title>
+            Lego Jason
+        </title>
+        <style type="text/css">
+        body { margin: 0; }
+    canvas { width: 100%; height: 100% }
+        </style>
+    </head>
+    <body>
+        <script src="color.js" type="text/javascript"></script>
+        <script src="js/three.min.js" type="text/javascript"></script>
+        <script src="js/AnaglyphEffect.js" type="text/javascript"></script>
+        <script src="js/PointerLockControls.js" type="text/javascript"></script>
+        <script src="lego/block.js"></script>
+
+
+
+<script type="text/javascript" language="JavaScript">
+var scene = new THREE.Scene();
+var controls, clock;
+
+clock = new THREE.Clock();
+
+
+// var camera = new THREE.OrthographicCamera( window.innerWidth / - 2,
+//     window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 48 );
+//        var camera = perspectiveCamera();
+var camera = legoPortraitCamera();
+//var camera = orthoCamera();
+
+//controls = new THREE.PointerLockControls(camera);
+//controls.movementSpeed = 100;
+//controls.enabled = true;
+//scene.add( controls.getObject() );
+
+
+
+
+
+
+function legoKellyLoaded() {
+    console.log("image loaded...")
+}
+
+
+function orthoCamera() {
+	camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -50, 50 );
+    camera.position.x = 0;//-20;
+    console.log("camer.postion.x=%s", camera.position.x);
+    camera.position.y = 0;//eyeHeight;//15;
+    camera.position.z = 0;
+    return camera;
+}
+
+function legoPortraitCamera() {
+    console.log('legoPortraitCamera...');
+    // create a camera, which defines where we're looking at.
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.x = 24;//-20;
+    console.log("camer.postion.x=%s", camera.position.x);
+    camera.position.y = eyeHeight * 5;//15;
+    camera.position.z = 52;
+    camera.up = new THREE.Vector3(0,1,0);
+    camera.lookAt(new THREE.Vector3(24, 0, 28));
+    return camera;
+}
+
+function perspectiveCamera() {
+    console.log('perspective...');
+    // create a camera, which defines where we're looking at.
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.x = 24;//-20;
+    console.log("camer.postion.x=%s", camera.position.x);
+    camera.position.y = eyeHeight;//15;
+    camera.position.z = 12;
+    camera.up = new THREE.Vector3(0,1,0);
+    camera.lookAt(new THREE.Vector3(24, 0, 28));
+    return camera;
+}
+
+var legoScale = 3.2;// 5/16" = 1'  This world represents 1ft = 1.0
+var eyeHeight = (1 + 3/8.0) * legoScale;
+
+
+// Ambient
+//var light = new THREE.AmbientLight( 0xffffff ); // soft white light
+//scene.add( light );
+
+// Directional
+var directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1 );
+directionalLight.position.set( 0, 10, 10 );
+scene.add( directionalLight );
+
+// Hemisphere
+
+
+
+// var planeGeometry = new THREE.PlaneGeometry(1000, 200, 20, 20);
+// var planeMaterial = new THREE.MeshLambertMaterial({color: 0x00ff00});
+// var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+// plane.receiveShadow = false;
+//
+// // rotate and position the plane
+// plane.rotation.x = -0.5 * Math.PI;
+// plane.position.x = 15
+// plane.position.y = 0
+// plane.position.z = 0
+
+var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+hemiLight.position.set(0, 500, 0);
+hemiLight.visible = true;
+scene.add(hemiLight);
+
+
+var renderer
+if (window.WebGLRenderingContext) {
+	renderer = new THREE.WebGLRenderer({antialias: true});
+//	renderer = new THREE.CanvasRenderer({antialias: true});
+} else {
+	renderer = new THREE.CanvasRenderer({antialias: true});
+}
+
+
+
+
+
+        renderer.setClearColor(0xffffff, 0.7);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMapEnabled = false;
+
+        // var renderer = new THREE.WebGLRenderer({antialias: true});
+        // renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        var r = renderer;
+        var anaglyphRenderer = new THREE.AnaglyphEffect( renderer, window.innerWidth, window.innerHeight );
+        //r = anaglyphRenderer;
+
+
+
+        var R = 0xff0909;
+        var G = 0x00FF00;
+        var B = 0x0000FF;
+
+
+
+        var wireframe = false;
+        var plane = new Block( { loc: [-24,0,-24], width: 48, length:48, height: 0.25, color: 0x9e9e9e, wireframe: wireframe})
+        var mesh = plane.getMesh();
+        scene.add(mesh);
+
+        var block = new Block({ loc: [0,0,-4], width: 2, length:8, height: 3, wireframe: wireframe });
+//        scene.add(block.getMesh());
+        // var b2 = new Block({ loc: { x:1,y:0,z:0 }, height: 2 });
+        // b2.addToScene(scene);
+
+
+        function addArrayBlocks() {
+
+            var model = [
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,G,G,R],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+                [R,R,R,G,B,B,G,B,B,B],
+            ];
+
+            for (var i = 0; i < model.length; i++) {
+                for (var j = 0; j < 10; j++) {
+
+                    var b3 = new Block({ loc: [j,0,-i], color:model[i][j], height: 3, studs: true, wireframe: wireframe });
+                    scene.add(b3.getMesh());
+                }
+            }
+        }
+        //addArrayBlocks();
+
+        function render() {
+            requestAnimationFrame(render);
+            //brick.rotation.y += 0.02;
+//        brick.rotation.x += 0.01;
+//            lego1x4.rotation.y += 0.02;
+//            p3.rotation.y += 0.1;
+//            brick.rotation.y -= 0.02;
+//camera.rotation.y -= 0.02;
+            //controls.update(clock.getDelta());
+            r.render(scene, camera);
+        }
+        render();
+
+        window.onload = function () {
+            var image = document.getElementById('sologo');
+
+            image.onload = function () {
+                console.log('Blocking image...');
+                var canvas = document.createElement('canvas');
+                canvas.width = image.width;
+                canvas.height = image.height;
+
+                var context = canvas.getContext('2d');
+                context.drawImage(image, 0, 0, image.width, image.height);
+
+                var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+                // Now you can access pixel data from imageData.data.
+                // It's a one-dimensional array of RGBA values.
+                // Here's an example of how to get a pixel's color at (x,y)
+//                var alpha = imageData.data[index + 3];
+
+
+                console.log('start blocking image...')
+                for (var px = 0; px < image.width; px++) {
+                    for (var py = 0; py < image.height; py++) {
+
+//                        var pixelData = canvas.getContext('2d').getImageData(px, py, 1, 1).data;
+//                        var index = (py*imageData.width + px) * 4;
+//                        var red = 255;//pixelData[0]//imageData.data[0];
+//                        var green = 0;//pixelData[1]//imageData.data[1index + 1];
+//                        var blue = 0;//pixelData[2]//imageData.data[index + 2];
+
+                        var index = (py*imageData.width + px) * 4;
+                        var red = imageData.data[index];
+                        var green = imageData.data[index + 1];
+                        var blue = imageData.data[index + 2];
+                        var color = Colors.rgb2hex(red,green,blue);
+                        var b = new Block({ loc: [px,0,-py], color: color, height: 1, studs: true, wireframe: wireframe });
+                        scene.add(b.getMesh());
+                    }
+                }
+                console.log('Done blocking image...')
+
+            };
+
+
+            image.src = 'joe.jpg';
+
+        };
+</script>
+<img width="48" height="48" src="#" alt="This image is going to load" id="sologo" style="display: none;" />
+
+
+    </body>
+</html>

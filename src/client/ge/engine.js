@@ -8,6 +8,8 @@ import Crosshair from './crosshair';
 import Highlight from './highlight';
 
 
+const debug = console;
+
 function _fullscreenPolyfill(ui, fn) {
   ui.requestFullscreen = ui.requestFullscreen ||
                          ui.webkitRequestFullscreen || // Polyfill
@@ -42,12 +44,12 @@ class Engine {
     // This handles when user cmd-tab away from fullscreen
     window.onfocus = () => {
       this.focused = true;
-      console.log('window.onfocus');
+      debug.log('window.onfocus');
       this._fullscreenChange();
     };
     window.onblur = () => {
       this.focused = false;
-      console.log('window.onblur');
+      debug.log('window.onblur');
       this._fullscreenChange();
     };
   }
@@ -187,7 +189,7 @@ class Engine {
     this._renderer.clearDepth();
     this._renderer.render(this.sceneui, this._camera);
     if (this.frameno < 10) {
-      console.log(`engine.drawScene: ${this.profiler.mark()}`);
+      debug.log(`engine.drawScene: ${this.profiler.mark()}`);
     }
   }
 
@@ -199,14 +201,14 @@ class Engine {
     this._highlight.update(delta, frameno);
     this._prevTime = time;
     if (this.frameno < 10) {
-      console.log(`engine.update: ${this.profiler.mark()}`);
+      debug.log(`engine.update: ${this.profiler.mark()}`);
     }
   }
 
   animate() {
     this.stats.begin();
     if (this.frameno < 10) {
-      console.log(`engine.animate start: ${this.profiler.mark()}`);
+      debug.log(`engine.animate start: ${this.profiler.mark()}`);
     }
 
     if (this._isRunning) {
@@ -218,16 +220,16 @@ class Engine {
     this.drawScene(); // Draw the objects
 
     if (this.frameno < 10) {
-      console.log(`engine.animate end: ${this.profiler.mark()}`);
+      debug.log(`engine.animate end: ${this.profiler.mark()}`);
     }
 
     this.stats.end();
   }
 
   start() {
-    console.log(`engine.start: ${this.profiler.mark()}`);
+    debug.log(`engine.start: ${this.profiler.mark()}`);
     this.initScene();
-    console.log(`engine.initScene: ${this.profiler.mark()}`);
+    debug.log(`engine.initScene: ${this.profiler.mark()}`);
     this._isRunning = true;
     this.animate();
   }

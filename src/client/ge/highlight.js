@@ -1,3 +1,5 @@
+
+
 // var lineSegments = new THREE.LineSegments(
 //   new THREE.EdgesGeometry( b2.getBufferGeometry(), 0.1),
 //   new THREE.LineBasicMaterial({ color: '#ffffff' })
@@ -155,7 +157,7 @@ class Highlight extends THREE.LineSegments {
    * @param positions
    */
   onSelection(intersect, positions) {
-    console.log('onSelection!')
+    debug.log('onSelection!');
     const face = this.intersect.face;
     const meshPosition = this._selectableMesh.geometry.attributes.position;
     positions.copyAt(0, meshPosition, face.a);

@@ -1,5 +1,7 @@
 /*eslint no-multi-spaces: "off"*/
 
+
+
 const colors = {};
 colors[1]   = colors.WHITE                  = new THREE.Color('#FFFFFF');
 colors[21]  = colors.BRIGHT_RED             = new THREE.Color('#C91A09');

@@ -76,6 +76,4 @@ class FaceList {
   }
 }
 
-export {
-  FaceList as default,
-};
+export default FaceList;

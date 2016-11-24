@@ -1,7 +1,7 @@
 /* eslint import/no-extraneous-dependencies: "off" */
 
 const babel = require('gulp-babel');
-const browserSync = require('browser-sync');
+// const browserSync = require('browser-sync');
 const changed = require('gulp-changed');
 const debug = require('gulp-debug');
 const del = require('del');
@@ -43,34 +43,24 @@ const LIBS_SRC = [
 ];
 
 // Javascript compile...
-gulp.task('js-server', () => gulp.src('src/server/**/*.js')
-  .pipe(changed('dist/server'))
+gulp.task('js-server', () => gulp.src('src/**/*.js')
+  .pipe(changed('dist'))
   .pipe(debug())
   .pipe(sourceMaps.init())
-  .pipe(babel({
-    plugins: [
-      'transform-es2015-modules-commonjs',
-      'transform-async-to-generator',
-    ],
-  }))
+  .pipe(babel())
   .pipe(sourceMaps.write('.'))
-  .pipe(gulp.dest('dist/server'))
+  .pipe(gulp.dest('dist'))
 );
 
-// Javascript compile...
-gulp.task('js-client', () => gulp.src(JS_CLIENT)
-  .pipe(changed('dist/client'))
-  .pipe(debug())
-  .pipe(sourceMaps.init())
-  .pipe(babel({
-    plugins: [
-      'transform-es2015-modules-systemjs',
-      'transform-async-to-generator',
-    ],
-  }))
-  .pipe(sourceMaps.write('.'))
-  .pipe(gulp.dest('dist/client'))
-);
+// // Javascript compile...
+// gulp.task('js-client', () => gulp.src(JS_CLIENT)
+//   .pipe(changed('dist/client'))
+//   .pipe(debug())
+//   .pipe(sourceMaps.init())
+//   .pipe(babel())
+//   .pipe(sourceMaps.write('.'))
+//   .pipe(gulp.dest('dist/client'))
+// );
 
 // Transform es6 js files to dist
 gulp.task('scss', () => gulp.src('src/client/**/*.scss')
@@ -115,7 +105,7 @@ gulp.task('index', () => gulp.src('src/client/index.html')
     .pipe(gulp.dest('dist/client'))
 );
 
-gulp.task('js', gulp.parallel(['js-server', 'js-client']));
+gulp.task('js', gulp.parallel(['js-server'/*, 'js-client'*/]));
 
 gulp.task('build', gulp.series(
   gulp.parallel([
@@ -130,18 +120,18 @@ gulp.task('build', gulp.series(
 // watch files for changes and reload
 gulp.task('serve', () => {
   server.listen({
-    env: { PORT: 8080, NODE_ENV: 'development' },
+    env: { PORT: 3000, NODE_ENV: 'development' },
     path: 'dist/server',
     execArgs: process.argv.slice(2) });
 
-  browserSync({
-    proxy: 'localhost:8080',
-    port: 3000,
-  });
+  // browserSync({
+  //   proxy: 'localhost:8080',
+  //   port: 3000,
+  // });
 
-  gulp.watch(['src/client/**/*.js'], gulp.series(['js-client']));
-  gulp.watch('src/server/**/*.js', gulp.series(['js-server']));
-  gulp.watch('dist/client/**/*', browserSync.reload);
+  //gulp.watch(['src/client/**/*.js'], gulp.series(['js-client']));
+  gulp.watch('src/**/*.js', gulp.series(['js-server']));
+  //gulp.watch('dist/client/**/*', browserSync.reload);
   gulp.watch('dist/server/**/*.js', server.restart);
   gulp.watch(COPY_SRC, gulp.series(['copy']));
   gulp.watch('src/client/**/*.scss', gulp.series(['scss']));

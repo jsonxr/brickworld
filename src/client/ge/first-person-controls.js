@@ -1,4 +1,7 @@
+
+
 const PI_2 = Math.PI / 2;
+const debug = console;
 
 class PointerLockControl extends THREE.Object3D {
 
@@ -58,82 +61,82 @@ class FirstPersonControls extends PointerLockControl {
 
     document.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
-        case 38: // up
-        case 87: // w
-          this.moveForward = true;
-          break;
-        case 37: // left
-        case 65: // a
-          this.moveLeft = true;
-          break;
-        case 40: // down
-        case 83: // s
-          this.moveBackward = true;
-          break;
-        case 39: // right
-        case 68: // d
-          this.moveRight = true;
-          break;
-        case 33:
-          this.moveUp = true;
-          break;
-        case 34:
-          this.moveDown = true;
-          break;
-        case 32: // space
-          if (this.canJump === true) {
-            this.velocity.y += this.jumpSpeed;
-          }
-          this.canJump = false;
-          break;
-        default:
-          break;
+      case 38: // up
+      case 87: // w
+        this.moveForward = true;
+        break;
+      case 37: // left
+      case 65: // a
+        this.moveLeft = true;
+        break;
+      case 40: // down
+      case 83: // s
+        this.moveBackward = true;
+        break;
+      case 39: // right
+      case 68: // d
+        this.moveRight = true;
+        break;
+      case 33:
+        this.moveUp = true;
+        break;
+      case 34:
+        this.moveDown = true;
+        break;
+      case 32: // space
+        if (this.canJump === true) {
+          this.velocity.y += this.jumpSpeed;
+        }
+        this.canJump = false;
+        break;
+      default:
+        break;
       }
     }, false);
 
     document.addEventListener('keyup', (event) => {
       switch (event.keyCode) {
-        case 38: // up
-        case 87: // w
-          this.moveForward = false;
-          break;
-        case 40: // down
-        case 83: // s
-          this.moveBackward = false;
-          break;
-        case 37: // left
-        case 65: // a
-          this.moveLeft = false;
-          break;
-        case 39: // right
-        case 68: // d
-          this.moveRight = false;
-          break;
-        case 33: // pg-up
-          this.moveUp = false;
-          break;
-        case 34: // pg-down
-          this.moveDown = false;
-          break;
-        default:
-          break;
+      case 38: // up
+      case 87: // w
+        this.moveForward = false;
+        break;
+      case 40: // down
+      case 83: // s
+        this.moveBackward = false;
+        break;
+      case 37: // left
+      case 65: // a
+        this.moveLeft = false;
+        break;
+      case 39: // right
+      case 68: // d
+        this.moveRight = false;
+        break;
+      case 33: // pg-up
+        this.moveUp = false;
+        break;
+      case 34: // pg-down
+        this.moveDown = false;
+        break;
+      default:
+        break;
       }
     }, false);
 
     window.addEventListener('mousedown', (event) => {
       event.preventDefault();
       switch (event.which) {
-        case 1:
-          console.log('left');
-          break;
-        case 2:
-          console.log('middle');
-          break;
-        case 3:
-          console.log('right');
-          break;
-        default:
-          console.log('??? mousedown: ', event);
+      case 1:
+        debug.log('left');
+        break;
+      case 2:
+        debug.log('middle');
+        break;
+      case 3:
+        debug.log('right');
+        break;
+      default:
+        debug.log('??? mousedown: ', event);
       }
       return false;
     }, false);

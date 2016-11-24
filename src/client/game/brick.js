@@ -1,4 +1,5 @@
 // import colors from './colors';
+
 import BrickTemplate from './brick-template';
 
 const VECTORS_PER_TRIANGLE = 3;
