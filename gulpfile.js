@@ -13,9 +13,9 @@ const sass = require('gulp-sass');
 const server = require('gulp-develop-server');
 const sourceMaps = require('gulp-sourcemaps');
 
-const JS_CLIENT = [
-  'src/client/**/*.js',
-];
+// const JS_CLIENT = [
+//   'src/client/**/*.js',
+// ];
 
 const COPY_SRC = [
   'src/**/*',               // ALL files not explicitly excluded
@@ -93,12 +93,12 @@ gulp.task('index', () => gulp.src('src/client/index.html')
       name: 'vendor',
       transform: (filepath) => {
         switch (path.extname(filepath)) {
-          case '.css':
-            return `<link rel="stylesheet" href="libs/${path.basename(filepath)}">`;
-          case '.js':
-            return `<script src="libs/${path.basename(filepath)}"></script>`;
-          default:
-            return '';
+        case '.css':
+          return `<link rel="stylesheet" href="libs/${path.basename(filepath)}">`;
+        case '.js':
+          return `<script src="libs/${path.basename(filepath)}"></script>`;
+        default:
+          return '';
         }
       },
     }))

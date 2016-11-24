@@ -16,17 +16,39 @@ Technical:
 
 * WebGL
 * javacript es6
-* node 6.2
+* node 7.2
 * Cassandra?
 
 Technologies not implemented in all browsers:
-* SharedArrayBuffer - 
-  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
-* Atomics - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics
-* webgl2 - https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext
-* fullscreen api - https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
-* pointer lock - https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
-* es6 - 
+
+# Advanced Browser Features
+
+| Feature           | Chrome   | Firefox | Edge     | Safari   |
+| ----------------- |:--------:|:-------:|:--------:|:--------:|
+| SharedBufferArray | flag     | flag    | N        |        N |
+| Atomics           | flag     | flag    | N        |        N |
+| Fullscreen API    | Y        | Y       |          |          |
+| Pointer Lock      | Y        | Y       |          |          |
+| Webgl2            | flag     | 51      |          |          |
+| es2015            | Y        | Y       |          |          |
+| WebRTC            | Y        | Y       |          |          |
+| WebSocket         | Y        | Y       |          |          |
+| WebAssembly       |          |         |          |          |
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics
+https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext
+http://webassembly.org/
+https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
+https://www.npmjs.com/package/datachannel.io - signaling server for webrtc
+http://peerjs.com/docs/#start - peerjs for webrtc
+https://www.amazon.com/WebRTC-RTCWEB-Protocols-HTML5-Real-Time-ebook/dp/B00IZNUP22 - book webrtc
+
+Chrome:
+
+    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --js-flags=--harmony-sharedarraybuffer --enable-blink-feature=SharedArrayBuffer --enable-unsafe-es3-apis
 
 Resources:
 
