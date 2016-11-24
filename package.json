@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "npm install && gulp",
-    "test": "mocha --require test/lib/helper.js --compilers js:babel-register test/client/**/*-spec.js"
+    "test": "mocha --compilers js:babel-register test/**/*-spec.js"
   },
   "babel": {
     "presets": [
