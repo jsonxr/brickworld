@@ -4,6 +4,12 @@
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
+  "env": {
+    "node": true
+  },
+  "globals": {
+    "Float32Array": true
+  },
   "rules": {
     "indent": [
       "error",
