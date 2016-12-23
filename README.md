@@ -77,6 +77,8 @@ Chrome:
 
 Resources:
 
+* Three.js examples - http://stemkoski.github.io/Three.js/
+* three.js game extensions - http://www.threejsgames.com/extensions/
 * Static Memory Javascript - http://www.html5rocks.com/en/tutorials/speed/static-mem-pools/
 * Comparing colors - http://stackoverflow.com/questions/4057475/rounding-colour-values-to-the-nearest-of-a-small-set-of-colours
   https://github.com/dtao/nearest-color

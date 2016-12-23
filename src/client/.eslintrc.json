@@ -6,6 +6,7 @@
   },
   "globals": {
     "THREE": true,
-    "Stats": true
+    "Stats": true,
+    "Promise": true
   }
 }

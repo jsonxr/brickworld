@@ -3,8 +3,9 @@
  */
 
 import Profiler from './profiler';
-import FirstPersonControls from './first-person-controls';
-import Crosshair from './crosshair';
+import HeroControl from './hero-control';
+import Cursor3d from './cursor-3d';
+
 import Highlight from './highlight';
 
 
@@ -148,8 +149,7 @@ class Engine {
     // 3d Cursor
     //----------------------------------
     // Cursor
-    this.crosshair = new Crosshair(this._camera);
-    this.crosshair.name = 'crosshair';
+    this.crosshair = new Cursor3d(this._camera);
     this.sceneui.add(this.crosshair);
 
     //----------------------------------
@@ -171,17 +171,19 @@ class Engine {
     const size = 16 * 20; // 20LDU units x 16 studs
     const step = 32;
     const gridHelper = new THREE.GridHelper(size, step);
-    gridHelper.name = 'Grid';
+
     this.scene.add(gridHelper);
 
     // FirstPerson Perspective
-    this.controls = new FirstPersonControls(this._camera);
+    //this.controls = new FirstPersonControl(this._camera);
+    this.controls = new HeroControl(this);
     this.controls.position.set(0, 88, 20 * 15); // Set starting position
     this.scene.add(this.controls);
 
     // This is used for selecting geometry...
     this._highlight = new Highlight(this._camera);
     this._highlight.enabled = false;
+    this._highlight.name = '_highlight';
     this.scene.add(this._highlight);
   }
 
@@ -198,7 +200,9 @@ class Engine {
   update(frameno) {
     const time = window.performance.now();
     const delta = (time - this._prevTime) / 1000;
+
     this.controls.update(delta);
+
     this.crosshair.update(delta, frameno);
     this._highlight.update(delta, frameno);
     this._prevTime = time;
@@ -243,7 +247,11 @@ class Engine {
   get highlight() {
     return this._highlight;
   }
+  get camera() {
+    return this._camera;
+  }
 
+  execute() { }
 }
 
 export default Engine;

@@ -30,6 +30,7 @@
     "babel-preset-es2017": "^6.16.0",
     "chai": "^3.5.0",
     "del": "^2.2.1",
+    "dexie": "^1.5.1",
     "eslint": "^3.7.1",
     "gl-matrix": "^2.3.2",
     "gulp": "github:gulpjs/gulp#4.0",

@@ -1,6 +1,6 @@
 
 
-const PI_2 = Math.PI / 2;
+const HALF_PI = Math.PI / 2;
 const debug = console;
 
 class PointerLockControl extends THREE.Object3D {
@@ -18,32 +18,24 @@ class PointerLockControl extends THREE.Object3D {
     this.enabled = false;
     this.onMouseMove = this.doMouseMove.bind(this);
     document.addEventListener('mousemove', this.onMouseMove, false);
-    this._direction = new THREE.Vector3(0, 0, -1);
-    this._rotation = new THREE.Euler(0, 0, 0, 'YXZ');
   }
 
   doMouseMove(event) {
     if (this.enabled === false) return;
     this.rotation.y -= event.movementX * 0.002;
     this.pitchObject.rotation.x -= event.movementY * 0.002;
-    this.pitchObject.rotation.x = Math.max(-PI_2, Math.min(PI_2, this.pitchObject.rotation.x));
+    this.pitchObject.rotation.x = Math.max(-HALF_PI, Math.min(HALF_PI, this.pitchObject.rotation.x));
   }
 
   dispose() {
     document.removeEventListener('mousemove', this.onMouseMove, false);
-  }
-
-  getDirection(v) {
-    this._rotation.set(this.pitchObject.rotation.x, this.rotation.y, 0);
-    v.copy(this._direction).applyEuler(this._rotation);
-    return v;
   }
 }
 
 /**
  * Controls while in web browser full screen mode.
  */
-class FirstPersonControls extends PointerLockControl {
+class FirstPersonControl extends PointerLockControl {
 
   /**
    *
@@ -52,7 +44,7 @@ class FirstPersonControls extends PointerLockControl {
    */
   constructor(camera) {
     super(camera);
-    this.name = 'FirstPersonControls';
+    this.name = 'FirstPersonControl';
     this.velocity = new THREE.Vector3();
     this.speed = 293;
     this.jumpSpeed = 350;
@@ -65,7 +57,11 @@ class FirstPersonControls extends PointerLockControl {
     this.mouseRight = false;
 
     document.addEventListener('keydown', (event) => {
+      event.preventDefault();
       switch (event.keyCode) {
+      case 9:
+        this.tab = true;
+        break;
       case 38: // up
       case 87: // w
         this.moveForward = true;
@@ -100,7 +96,11 @@ class FirstPersonControls extends PointerLockControl {
     }, false);
 
     document.addEventListener('keyup', (event) => {
+      event.preventDefault();
       switch (event.keyCode) {
+      case 9:
+        this.tab = false;
+        break;
       case 38: // up
       case 87: // w
         this.moveForward = false;
@@ -130,7 +130,7 @@ class FirstPersonControls extends PointerLockControl {
 
     window.addEventListener('mousedown', (event) => {
       event.preventDefault();
-      switch (event.which) {
+      switch (event.button) {
       case 1:
         this.mouseLeft = true;
         break;
@@ -213,4 +213,8 @@ class FirstPersonControls extends PointerLockControl {
   }
 }
 
-export default FirstPersonControls;
+export default FirstPersonControl;
+export {
+  PointerLockControl,
+  FirstPersonControl
+};
