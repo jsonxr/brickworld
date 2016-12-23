@@ -16,7 +16,6 @@ const RADIUS_SEGMENTS = 16;
 //        24 LDU = 3/8"
 //        1 LDU = 1/64"
 
-
 // Scale: Lego To People Size
 //         4 blocks high = 6 feet tall
 //         4 * 3/8" = 6'
@@ -32,7 +31,8 @@ const RADIUS_SEGMENTS = 16;
 //        5 mi/hr * (1/48 scale * 5280 ft/mi * 12 inch/ft * 64 inch/LDU) / (1hr * 60min/hr * 60sec/min) = LDU/sec = 117
 
 //
-const blockGap = 1 / 4;
+//const blockGap = 1 / 4;
+const blockGap = 0;
 
 
 // const geometries =
@@ -80,6 +80,7 @@ class Brick {
   }
 
   getBufferGeometry() {
+    console.log('getBufferGeometry: ', this.color);
     const geometry = new THREE.BoxBufferGeometry(
       (this.options.width * 20) - blockGap,
       (this.options.height * 8) - blockGap,

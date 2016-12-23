@@ -1,9 +1,9 @@
 {
-  "extends": "airbnb",
-  "globals": {
-    "describe": "off",
-    "it": "off"
+  "extends": "../.eslintrc.json",
+  "env": {
+    "mocha": true
   },
-  "rules": {
+  "globals": {
+    "System": true
   }
 }

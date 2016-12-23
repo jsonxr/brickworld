@@ -149,6 +149,7 @@ class Engine {
     //----------------------------------
     // Cursor
     this.crosshair = new Crosshair(this._camera);
+    this.crosshair.name = 'crosshair';
     this.sceneui.add(this.crosshair);
 
     //----------------------------------
@@ -170,6 +171,7 @@ class Engine {
     const size = 16 * 20; // 20LDU units x 16 studs
     const step = 32;
     const gridHelper = new THREE.GridHelper(size, step);
+    gridHelper.name = 'Grid';
     this.scene.add(gridHelper);
 
     // FirstPerson Perspective

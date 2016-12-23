@@ -5,9 +5,159 @@ import Engine from './ge/engine';
 import Brick from './game/brick';
 import BrickPart from './game/brick-part';
 import Chunk from './game/chunk';
+import colors from '../shared/colors';
 
+import {BRICK_WIDTH, BRICK_HEIGHT} from '../shared/brick-geometry';
 
 const debug = console;
+
+function addBottomPlate(chunk) {
+  const b = new Brick({ width: 32, depth: 32, height: 0.5, color: '#9BA19D', position: [0, -4, 0] });
+  b.name = 'baseplate';
+  chunk.add(b);
+}
+
+function addLotsOfBricks(chunk, options = {}) {
+  const width = options.width || 32;
+  const depth = options.depth || 10;
+  const height = options.height || 4;
+  const offsets = options.offsets || [0,0,0];
+  // width = 32, depth = 10, height = 4, offsets [0,0,0]
+  let color;
+  let b;
+  for (let i = 0; i < width; i++) {
+    for (let j = 0; j < depth; j++) {
+      for (let k = 0; k < height; k++) {
+        if (i >= 0 && i < colors.values.length) {
+          color = colors.values[i];
+        } else {
+          const colorIndex = Math.floor(Math.random() * colors.values.length);
+          color = colors.values[colorIndex];
+        }
+        b = new Brick({
+          width: 1,
+          depth: 1,
+          height: 3,
+          color,
+          position: [
+            (i * BRICK_WIDTH) - 310 + (offsets[0] * BRICK_WIDTH),
+            (k * BRICK_HEIGHT*3) + 0 + (offsets[1] * BRICK_HEIGHT * 3),
+            (j * BRICK_WIDTH) - 310 + (offsets[2] * BRICK_WIDTH)
+          ] });
+        b.name = `(${i},${j},${k})`
+        chunk.add(b);
+      }
+    }
+  }
+}
+
+function add2Bricks(chunk) {
+  // Add custom brick plate
+  chunk.add(new Brick({
+    name: '2x4',
+    width: 2,
+    depth: 4,
+    height: 1,
+    color: '#F2705E',
+    position: [0, 0, 120],
+  }));
+
+  // Add brick part 3001
+  chunk.add(new BrickPart({
+    name: '3001',
+    part: '3001',
+    color: '#C91A09',
+    position: [0, 0, 120],
+  }));
+}
+
+function addStudsToScene(chunk, scene, brickMaterial) {
+  const g = chunk.getStudGeometry();
+  const studs = new THREE.Mesh(g, brickMaterial);
+  studs.name = 'Studs';
+  scene.add(studs);
+  return studs;
+}
+
+function addBricksToScene(chunk, scene, brickMaterial) {
+  // Get the main geometry
+  const g = chunk.getBufferGeometry();
+  const bricks = new THREE.Mesh(g, brickMaterial);
+  bricks.name = 'Bricks';
+  scene.add(bricks);
+  return bricks;
+}
+
+// Set the normals so we can see them
+function addNormals(bricks, scene) {
+  const edges = new THREE.VertexNormalsHelper(bricks, 2, 0xffffff, 1 );
+  scene.add(edges);
+}
+
+function addInstances() {
+
+  const triangles = 1;
+  const instances = 65000;
+
+  var geometry = new THREE.InstancedBufferGeometry();
+  geometry.maxInstancedCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+
+  var vertices = new THREE.BufferAttribute( new Float32Array( triangles * 3 * 3 ), 3 );
+  vertices.setXYZ( 0, 20.025, -20.025, 0 );
+  vertices.setXYZ( 1, -20.025, 20.025, 0 );
+  vertices.setXYZ( 2, 0, 0, 20.025 );
+  geometry.addAttribute( 'position', vertices );
+  var offsets = new THREE.InstancedBufferAttribute( new Float32Array( instances * 3 ), 3, 1 );
+  for ( let i = 0, ul = offsets.count; i < ul; i++ ) {
+    offsets.setXYZ( i, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 );
+  }
+  geometry.addAttribute( 'offset', offsets );
+  var colors = new THREE.InstancedBufferAttribute( new Float32Array( instances * 4 ), 4, 1 );
+  for ( let i = 0, ul = colors.count; i < ul; i++ ) {
+    colors.setXYZW( i, Math.random(), Math.random(), Math.random(), Math.random() );
+  }
+  geometry.addAttribute( 'color', colors );
+  var vector = new THREE.Vector4();
+  var orientationsStart = new THREE.InstancedBufferAttribute( new Float32Array( instances * 4 ), 4, 1 );
+  for ( let i = 0, ul = orientationsStart.count; i < ul; i++ ) {
+    vector.set( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1 );
+    vector.normalize();
+    orientationsStart.setXYZW( i, vector.x, vector.y, vector.z, vector.w );
+  }
+  geometry.addAttribute( 'orientationStart', orientationsStart );
+  var orientationsEnd = new THREE.InstancedBufferAttribute( new Float32Array( instances * 4 ), 4, 1 );
+  for ( let i = 0, ul = orientationsEnd.count; i < ul; i++ ) {
+    vector.set( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1 );
+    vector.normalize();
+    orientationsEnd.setXYZW( i, vector.x, vector.y, vector.z, vector.w );
+  }
+  geometry.addAttribute( 'orientationEnd', orientationsEnd );
+  // material
+  var material = new THREE.RawShaderMaterial( {
+    uniforms: {
+      time: { value: 1.0 },
+      sineTime: { value: 1.0 }
+    },
+    vertexShader: document.getElementById( 'vertexShader' ).textContent,
+    fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+    side: THREE.DoubleSide,
+    transparent: true
+  } );
+  var mesh = new THREE.Mesh( geometry, material );
+  return mesh;
+}
+
+function loadCubeMap() {
+  const urls = [
+    'cubemaps/px.jpg', 'cubemaps/nx.jpg',
+    'cubemaps/py.jpg', 'cubemaps/ny.jpg',
+    'cubemaps/pz.jpg', 'cubemaps/nz.jpg'
+  ];
+  const refractionCube = new THREE.CubeTextureLoader().load( urls );
+  refractionCube.mapping = THREE.CubeRefractionMapping;
+  refractionCube.format = THREE.RGBFormat;
+  return refractionCube;
+}
 
 class MyGame extends Engine {
 
@@ -44,104 +194,58 @@ class MyGame extends Engine {
     //----------------------------------
     // Add Geometry
     //----------------------------------
+    const reflectionCube = loadCubeMap();
+    //this.scene.background = reflectionCube;
+
+    const refractionCube = loadCubeMap();
+    refractionCube.mapping = THREE.CubeRefractionMapping;
 
     // Material to use for drawing bricks
-    const m = new THREE.MeshStandardMaterial({
-      // wireframe:true,
+    const brickMaterial = new THREE.MeshStandardMaterial({
+      //wireframe:true,
       vertexColors: THREE.VertexColors,
+      //precision: 'highp',
+      //envMap: reflectionCube,
+      refractionRatio: 0.95,
+      reflectivity: 0.3,
+      //metalness: 0.5,
+      //roughness: 0.98,
     });
+    console.log('vertexShader');
+    console.log(brickMaterial.vertexShader);
+    console.log('------------------------');
+
+    console.log('fragmentShader');
+    console.log(brickMaterial.fragmentShader);
+    console.log('------------------------');
 
     this.controls.position.set(0, 88, 20 * 3); // Set starting position
 
-    this.chunk = new Chunk();
-    const b = new Brick({ width: 32, depth: 32, height: 0.5, color: '#9BA19D', position: [0, -4, 0] });
-    this.chunk.add(b);
+    // const geometry = brickGeometry.getBrickGeometry();
+    // const mesh = new THREE.Mesh(geometry, brickMaterial);
+    // this.scene.add(mesh);
 
-    let color;
-    let b2;
-    const colors = [
-      '#C870A0', // LEGOID 221 - Bright Purple
-      '#E4ADC8', // LEGOID 222 - Light Purple
-      '#923978', // LEGOID 124 - Bright Reddish Violet
-      '#C91A09', // LEGOID 21  - Bright Red
-      '#720E0F', // LEGOID 154 - New Dark Red
-      '#FE8A18', // LEGOID 106 - Bright Orange
-      '#F8BB3D', // LEGOID 191 - Flame Yellowish Orange
-      '#F2CD37', // LEGOID 24  - Bright Yellow
-      '#FFF03A', // LEGOID 226 - Cool Yellow
-      '#4B9F4A', // LEGOID 37  - Bright Green
-      '#A0BCAC', // LEGOID 151 - Sand Green
-      '#257A3E', // LEGOID 28  - Dark Green
-      '#184632', // LEGOID 141 - Earth Green
-      '#BBE90B', // LEGOID 119 - Bright Yellowish Green
-      '#9B9A5A', // LEGOID 330 - Olive Green
-      '#0055BF', // LEGOID 23  - Bright Blue
-      '#5C9DD1', // LEGOID 102 - Medium Blue
-      '#86C1E1', // LEGOID 212 - Light Royal Blue
-      '#597184', // LEGOID 135 - Sand Blue
-      '#0D325B', // LEGOID 140 - Earth Blue
-      '#1498D7', // LEGOID 321 - Dark Azur
-      '#3EC2DD', // LEGOID 322 - Medium Azur
-      '#AC78BA', // LEGOID 324 - Medium Lavender
-      '#E1D5ED', // LEGOID 325 - Lavender
-      '#3F3691', // LEGOID 268 - Medium Lilac
-      '#582A12', // LEGOID 192 - Reddish Brown,
-      '#352100', // LEGOID 308 - Dark Brown
-      '#05131D', // LEGOID  26 - Black
-      '#FFFFFF', // LEGOID   1 - White
-    ];
-    for (let i = 0; i < 32; i++) {
-      for (let j = 0; j < 10; j++) {
-        if (i >= 0 && i < colors.length) {
-          color = colors[i];
-        } else {
-          const colorIndex = Math.floor(Math.random() * colors.length);
-          color = colors[colorIndex];
-        }
-        b2 = new Brick({
-          width: 1,
-          depth: 1,
-          height: 1,
-          color,
-          position: [(i * 20) - 310, 0, (j * 20) - 310] });
-        this.chunk.add(b2);
-      }
+
+    // this.instances = addInstances();
+    // this.scene.add(this.instances);
+
+    // Bottom plate...
+    function addChunk(scene, options) {
+      const chunk = new Chunk();
+      //addBottomPlate(chunk);
+      addLotsOfBricks(chunk, options);
+      //add2Bricks(chunk);
+      addStudsToScene(chunk, scene, brickMaterial);
+      addBricksToScene(chunk, scene, brickMaterial);
+      return chunk;
     }
+    //this.chunk = addChunk(this.scene, { width: 32, depth: 10, height: 1, offsets: [0,0,0]});
+    this.chunk = addChunk(this.scene, { width: 1, depth: 1, height: 1, offsets: [0,0,0]});
+    // addChunk(this.scene, 10, 10);
+    // addChunk(this.scene, 10, 20);
+    // addChunk(this.scene, 10, 30);
+    // addNormals(bricks, this.scene);
 
-    b2 = new Brick({
-      width: 2,
-      depth: 4,
-      height: 1,
-      color: '#F2705E',
-      position: [0, 0, 120],
-    });
-    this.chunk.add(b2);
-
-    b2 = new BrickPart({
-      part: '3001',
-      color: '#C91A09',
-      position: [0, 0, 120],
-    });
-    this.chunk.add(b2);
-
-    // Get the main geometry
-    let g = this.chunk.getBufferGeometry();
-    debug.log(`create chunk geometry: ${this.profiler.mark()}`);
-    const bricks = new THREE.Mesh(g, m);
-    bricks.name = 'Bricks';
-    this.scene.add(bricks);
-    // let edges = new THREE.VertexNormalsHelper(bricks, 2, 0xffffff, 1 );
-    // this.scene.add(edges);
-    debug.log(`add bricks to scene: ${this.profiler.mark()}`);
-
-    g = this.chunk.getStudGeometry();
-    debug.log(`create studs: ${this.profiler.mark()}`);
-    const studs = new THREE.Mesh(g, m);
-    studs.name = 'Studs';
-    this.scene.add(studs);
-    // edges = new THREE.VertexNormalsHelper(studs, 2, 0xffffff, 1 );
-    // this.scene.add(edges);
-    debug.log(`add studs to scene: ${this.profiler.mark()}`);
 
     if (this.frameno < 10) {
       debug.log(`game.initScene: ${this.profiler.mark()}`);
@@ -157,8 +261,17 @@ class MyGame extends Engine {
 
   update(frameNo) {
     super.update(frameNo);
+
+    // var time = performance.now();
+    // var object = this.instances;
+    // object.rotation.y = time * 0.0005;
+    // object.material.uniforms.time.value = time * 0.005;
+    // object.material.uniforms.sineTime.value = Math.sin( object.material.uniforms.time.value * 0.05 );
+
+
+    // Uncomment below to enable highlight selecting
     const faceIndex = this.highlight.faceIndex;
-    if (faceIndex) {
+    if (faceIndex !== null) { // 0 is a valid faceIndex, so check for null
       const linestodraw = this.chunk.getHighlightFromFaceIndex(faceIndex);
       //TODO: get left/right node and compare to see if we need to update the
       // lines to highlight.
@@ -170,6 +283,51 @@ class MyGame extends Engine {
     } else {
       this.highlight.visible = false;
     }
+
+    if (this.isFullscreen && this.highlight.visible) {
+      const brick = this.chunk.selectedBrick;
+
+      if (this.controls.mouseLeft) {
+        if (brick && performance.now() - this.lastMouseLeft > 200) {
+          this.chunk.remove(brick);
+          this.lastMouseLeft = performance.now();
+        }
+      } else {
+        this.lastMouseLeft = 0;
+      }
+
+      if (this.controls.mouseRight) {
+        if (brick && performance.now() - this.lastMouseRight > 200) {
+          console.log(this.chunk.faceIndex);
+          //this.chunk.add()
+          const normalArray = this.chunk.selectable.attributes.normal.array;
+          const x = normalArray[this.chunk.faceIndex * 3];
+          const y = normalArray[this.chunk.faceIndex * 3 + 1];
+          const z = normalArray[this.chunk.faceIndex * 3 + 2];
+          console.log(`x=${x},y=${y},z=${z}`);
+
+          const b = new Brick({
+            width: 1,
+            depth: 1,
+            height: 3,
+            color: '#C91A09',
+            position: [
+              brick.position.x + (x * BRICK_WIDTH),
+              brick.position.y + (y * BRICK_HEIGHT * 3),
+              brick.position.z + (z * BRICK_WIDTH)
+            ] });
+          b.name = `(${b.position})`;
+          this.chunk.add(b);
+
+          //this.chunk.remove(this.chunk.selectedBrick);
+          this.lastMouseRight = performance.now();
+        }
+      } else {
+        this.lastMouseRight = 0;
+      }
+
+    }
+
   }
 }
 
@@ -188,7 +346,8 @@ function logFullscreenChange(event) {
   // The target of the event is always the document,
   // but it is possible to retrieve the fullscreen element through the API
   debug.log('fullscreenchange', event);
-  debug.log(element);
+  debug.log('fullscreen: ', element);
+  window.game.isFullscreen = (element !== undefined);
 }
 document.addEventListener('webkitfullscreenchange', logFullscreenChange);
 document.addEventListener('msfullscreenchange', logFullscreenChange);

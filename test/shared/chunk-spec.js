@@ -7,9 +7,9 @@ describe('shared/chunk', () => {
 
     it('should instantiate without parameters', () => {
       const chunk = new Chunk();
-      //assert(true)
+      assert(chunk);
     });
 
-});
+  });
 
 });

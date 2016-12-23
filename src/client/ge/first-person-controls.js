@@ -7,6 +7,7 @@ class PointerLockControl extends THREE.Object3D {
 
   constructor(camera) {
     super();
+    this.name = 'PointerLockControl';
     // Camera is child of pitch
     this.pitchObject = new THREE.Object3D();
     this.pitchObject.add(camera);
@@ -51,6 +52,7 @@ class FirstPersonControls extends PointerLockControl {
    */
   constructor(camera) {
     super(camera);
+    this.name = 'FirstPersonControls';
     this.velocity = new THREE.Vector3();
     this.speed = 293;
     this.jumpSpeed = 350;
@@ -58,6 +60,9 @@ class FirstPersonControls extends PointerLockControl {
     this.moveLeft = false;
     this.moveBackward = false;
     this.moveRight = false;
+    this.mouseLeft = false;
+    this.mouseMiddle = false;
+    this.mouseRight = false;
 
     document.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
@@ -127,16 +132,34 @@ class FirstPersonControls extends PointerLockControl {
       event.preventDefault();
       switch (event.which) {
       case 1:
-        debug.log('left');
+        this.mouseLeft = true;
         break;
       case 2:
-        debug.log('middle');
+        this.mouseMiddle = true;
         break;
       case 3:
-        debug.log('right');
+        this.mouseRight = true;
         break;
       default:
         debug.log('??? mousedown: ', event);
+      }
+      return false;
+    }, false);
+
+    window.addEventListener('mouseup', (event) => {
+      event.preventDefault();
+      switch (event.which) {
+      case 1:
+        this.mouseLeft = false;
+        break;
+      case 2:
+        this.mouseMiddle = false;
+        break;
+      case 3:
+        this.mouseRight = false;
+        break;
+      default:
+        debug.log('??? mouseup: ', event);
       }
       return false;
     }, false);

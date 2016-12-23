@@ -8,26 +8,45 @@ module.exports = function(config) {
     basePath: '',
 
 
+    //plugins: ['karma-systemjs'],
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['systemjs', 'mocha'],
 
     systemjs: {
       baseURL: '/',
-      packages: {
-        '/': {
-          defaultExtension: 'js'
+      configFile: 'src/client/system.conf.js',
+      config: {
+        paths: {
+          'systemjs': 'node_modules/systemjs/dist/system.js',
+          'system.js.map': 'node_modules/systemjs/dist/system.js.map',
+          'traceur': 'node_modules/traceur/dist/commonjs/traceur.js',
+          //'systemjs': 'node_modules/systemjs/dist/system.js',
+          'three': 'node_modules/three/build/three.min.js',
+          'chai': 'node_modules/chai/chai.js'
+          //'chai': 'https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js'
         }
       },
-      files: ['src/**/*.js']
+      // map: {
+      //   'systemjs': 'node_modules/systemjs/dist/system.js',
+      //   'three.js': 'node_modules/three/build/three.min.js',
+      //   // 'plugin-babel': 'node_modules/systemjs-plugin-babel/plugin-babel.js',
+      //   // 'systemjs-babel-build': 'node_modules/systemjs-plugin-babel/systemjs-babel-browser.js',
+      //   // 'system-polyfills': 'node_modules/systemjs/dist/system-polyfills.js',
+      //   // 'es6-module-loader': 'node_modules/es6-module-loader/dist/es6-module-loader.js',
+      //   'chai': 'https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js'
+      // },
+      //files: [{ pattern: 'src/**/*.js', included: false }]
     },
 
     // list of files / patterns to load in the browser
     files: [
       //{pattern: 'node_modules/systemjs/dist/system.js', included: true},
+      {pattern: 'node_modules/three/build/three.min.js', included: false},
       {pattern: 'src/**/*.js', included: false},
+      {pattern: 'src/**/*.json', included: false},
       {pattern: 'node_modules/chai/chai.js', included: false},
-      {pattern: 'test/lib/karma-test-shim.js', included: true},
+//      {pattern: 'test/lib/karma-test-shim.js', included: true},
       {pattern: 'test/shared/*-spec.js', included: true},
       {pattern: 'test/client/*-spec.js', included: true},
       //{pattern: 'test/client/**/*-spec.js', included: true},
@@ -81,7 +100,10 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: [
+      'Chrome',
+    //  'PhantomJS'
+    ],
 
 
     // Continuous Integration mode
@@ -91,5 +113,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
+  });
 }

@@ -28,6 +28,8 @@ const LIBS_SRC = [
   // This is used for importing modules
   'node_modules/systemjs/dist/system.js',
   'node_modules/systemjs/dist/system.js.map',
+  'node_modules/traceur/bin/traceur.js',
+  'node_modules/traceur/bin/traceur.js.map',
 
   // this is the gl-matrix library for vectors and matrices
   'node_modules/gl-matrix/dist/gl-matrix.js',
@@ -36,6 +38,7 @@ const LIBS_SRC = [
   'node_modules/whatwg-fetch/fetch.js',
 
   // Three.js for rendering
+  //'node_modules/three/build/three.min.js',
   'node_modules/three/build/three.js',
   'node_modules/three/examples/js/Detector.js',
   'node_modules/three/examples/js/libs/stats.min.js',

@@ -35,6 +35,7 @@ class Highlight extends THREE.LineSegments {
     });
 
     super(geometry, material);
+    this.name = 'Highlight';
     this.lines = this;
     this._camera = camera;
     this._raycaster = new THREE.Raycaster();
@@ -68,6 +69,7 @@ class Highlight extends THREE.LineSegments {
     this._selectableMesh = new THREE.Mesh(value, new THREE.MeshStandardMaterial({
       //wireframe:true
     }));
+    this._selectableMesh.name = 'highlight';
   }
 
   /**
@@ -121,6 +123,12 @@ class Highlight extends THREE.LineSegments {
       if (frameno < 10) {
         debug.log('!this._selectableMesh', this);
       }
+      return;
+    }
+
+    // We don't need to find the intersection if highlight is disabled
+    if (!this.enabled) {
+      this._faceIndex = null;
       return;
     }
 

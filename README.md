@@ -14,37 +14,61 @@ Desired Features:
 
 Technical:
 
-* WebGL
-* javacript es6
-* node 7.2
-* Cassandra?
+* WebGL - Render in browsers
+* javacript es6 - modern javascript!
+* node 7.2 - modern javascript on server
+* Cassandra - Distributed fault tolerant database
 
 Technologies not implemented in all browsers:
 
-# Advanced Browser Features
+# Required Browser Features
+| Feature           |                                                  |
+| ----------------- |:-------------------------------------------------|
+| es2015            | Use only modern javascript                       |
+| Fullscreen API    | Used for desktop support of games                |
+| Pointer Lock      | Lock the mouse so can support looking            |
 
-| Feature           | Chrome   | Firefox | Edge     | Safari   |
-| ----------------- |:--------:|:-------:|:--------:|:--------:|
-| SharedBufferArray | flag     | flag    | N        |        N |
-| Atomics           | flag     | flag    | N        |        N |
-| Fullscreen API    | Y        | Y       |          |          |
-| Pointer Lock      | Y        | Y       |          |          |
-| Webgl2            | flag     | 51      |          |          |
-| es2015            | Y        | Y       |          |          |
-| WebRTC            | Y        | Y       |          |          |
-| WebSocket         | Y        | Y       |          |          |
-| WebAssembly       |          |         |          |          |
+# Desired Browser Features
+| Feature           |                                                  |
+| ----------------- |:-------------------------------------------------|
+| SharedBufferArray | Used to share memory between workers and UI      |
+| Atomics           | Needed to lock writes to shared memory           |
+| IndexedDB         | Use to cache models and chunks                   |
+| SIMD              | Speed up vector operations                       |
+| Webgl2            | http://webgl2fundamentals.org/webgl/lessons/webgl1-to-webgl2.html#Vertex-Array-Objects |
+| WebRTC            |                                                  |
+| WebSocket         |                                                  |
+| WebAssembly       |                                                  |
+| XHR2              | Download binary objects                          |
 
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics
-https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
-https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
-https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext
-http://webassembly.org/
-https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
-https://www.npmjs.com/package/datachannel.io - signaling server for webrtc
-http://peerjs.com/docs/#start - peerjs for webrtc
-https://www.amazon.com/WebRTC-RTCWEB-Protocols-HTML5-Real-Time-ebook/dp/B00IZNUP22 - book webrtc
+# Browser Support
+| Feature           | Chrome   | Firefox  | Edge     | Safari   |
+| ----------------- |:--------:|:--------:|:--------:|:--------:|
+| es2015            | Y        | Y        | ?        | ?        |
+| Atomics           | flag     | flag     | N        | N        |
+| Fullscreen API    | Y        | Y        | ?        | ?        |
+| IndexedDB         | 24       | 37       |          | 10       |
+| Pointer Lock      | Y        | Y        | ?        | ?        |
+| SharedBufferArray | flag     | flag     | N        | N        |
+| SIMD              | N        | Nightly  | Nightly  | ?        |
+| Webgl2            | flag     | 51       | ?        | ?        |
+| WebRTC            | Y        | Y        | ?        | ?        |
+| WebSocket         | Y        | Y        | ?        | ?        |
+| WebAssembly       | ?        | ?        | ?        | ?        |
+| XHR2              |          |          |          |          |
+
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics
+* https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+* https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API
+* https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext
+* http://webassembly.org/
+* https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
+* https://www.npmjs.com/package/datachannel.io - signaling server for webrtc
+* http://peerjs.com/docs/#start - peerjs for webrtc
+* https://www.amazon.com/WebRTC-RTCWEB-Protocols-HTML5-Real-Time-ebook/dp/B00IZNUP22 - book webrtc
+* https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API#Browser_compatibility - IndexedDB
+* https://www.html5rocks.com/en/tutorials/file/xhr2/
 
 Chrome:
 
@@ -53,29 +77,18 @@ Chrome:
 Resources:
 
 * Static Memory Javascript - http://www.html5rocks.com/en/tutorials/speed/static-mem-pools/
-
 * Comparing colors - http://stackoverflow.com/questions/4057475/rounding-colour-values-to-the-nearest-of-a-small-set-of-colours
   https://github.com/dtao/nearest-color
   https://github.com/markusn/color-diff <- This one is probably best!
-
 * https://twgljs.org/
-
 * SIMD - Make matrix operations much faster.
     https://hacks.mozilla.org/2014/10/introducing-simd-js/
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SIMD
-
-    Firefox: Nightly
-    Chrome: Intent to implement
-    Microsoft: In development
-    Safari: ?
-
+    * Firefox: Nightly
+    * Chrome: Intent to implement
+    * Microsoft: In development
+    * Safari: ?
 * Shared Array Buffers - Ability to share memory between main thread and workers. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
-
-    Firefox: 47
-    Chrome: In development  --js-flags=--harmony-sharedarraybuffer --enable-blink-feature=SharedArrayBuffer
-    Edge: ?
-    Safari: ?
-
 * Benchmark for js matrix libraries - http://stepheneb.github.io/webgl-matrix-benchmarks/matrix_benchmark.html
 
 * https://medium.com/javascript-and-opinions/state-of-the-art-javascript-in-2016-ab67fc68eb0b#.59xwjq5b4
@@ -85,9 +98,9 @@ https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Building
 
 * http://forums.ldraw.org/archive/index.php?thread-15870.html - json ldraw file format discussion
 * http://forums.ldraw.org/showthread.php?tid=14432&pid=14432#pid14432 - new ldraw file format discussion
+* http://webglstats.com/
 
-
-* BufferAttributes memory layout - https://github.com/mrdoob/three.js/issues/6877
+* BufferAttributes memory layout - https://github.com/mrdoob/three.js/issues/6877 arrays interleved or not. dynamic or not.
 * Cylinder UV - http://stackoverflow.com/questions/8315546/texturing-a-cylinder-in-three-js
 
 * Imposters, skyboxes rendering node side... https://github.com/mrdoob/three.js/issues/7085
@@ -126,7 +139,7 @@ https://github.com/systemjs/systemjs/blob/master/docs/production-workflows.md - 
 
 # Browser Requirements
 
-## performance.now()   
+## performance.now()
 http://caniuse.com/#search=performance.now
 
 Feature Detection:
