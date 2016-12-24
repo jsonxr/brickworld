@@ -16,22 +16,23 @@ class CommandState {
   }
 
   update(controls, delta) {
-    let enter = false;
-    if (controls.keys[KeyEvents.DOM_VK_ENTER] || controls.keys[KeyEvents.DOM_VK_RETURN]) {
-      enter = true;
-      //this.command = controls.keyPresses;
-      this.command = controls.domCommand.input.value.trim();
-      controls.domCommand.input.value = '';
-      controls.clearKeyPresses();
-    } else {
-      //controls.domCommand.value = controls.keyPresses;
-    }
-
-    if (enter) {
-      if (this.command) {
-        controls.execute(this.command);
+    const keyPressed = controls.keyPressed;
+    const input = controls.domCommand.input;
+    if (keyPressed === '/') {
+      const index = input.value.lastIndexOf('/');
+      if (index >= 0) {
+        input.value = input.value.substring(0, index);
       }
-      return null;
+      return null; // Pop state
+    } else {
+      if (controls.keys[KeyEvents.DOM_VK_ENTER] || controls.keys[KeyEvents.DOM_VK_RETURN]) {
+        this.command = input.value.trim();
+        input.value = '';
+        if (this.command) {
+          controls.execute(this.command);
+        }
+        return null;
+      }
     }
   }
 }

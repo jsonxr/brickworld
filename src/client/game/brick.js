@@ -92,9 +92,23 @@ class Brick {
     return this._geometry;
   }
 
+  get studGeometry() {
+    if (!this._studGeometry) {
+      this._studGeometry = this.getStudGeometry();
+    }
+    return this._studGeometry;
+  }
+
+  get selectionGeometry() {
+    if (!this._selectionGeometry) {
+      this._selectionGeometry = this.getSelectionGeometry();
+    }
+    return this._selectionGeometry;
+  }
+
   get outline() {
     if (!this._outline) {
-      this._outline = new THREE.EdgesGeometry(this.geometry, 0.1);
+      this._outline = new THREE.EdgesGeometry(this.selectionGeometry, 0.1);
     }
     return this._outline;
   }
@@ -128,7 +142,6 @@ class Brick {
     const verticexCount = studCount * RADIUS_SEGMENTS * 4 * 3; // 1 top
     // triangle, 1 bottom
                                                              // triangle, 2 triangles on side
-
     const studs = new THREE.BufferGeometry();
     // Per Vertex Colors
     const colors = new Float32Array(verticexCount * 3); // 3 floats per vertex
@@ -165,9 +178,63 @@ class Brick {
     return studs;
   }
 
-  getSelectable() {
-    return this.getBufferGeometry();
+  getSelectionGeometry() {
+    return this.geometry;
+    // const studCount = this.width * this.depth;
+    // const VERTICES_PER_BOX = 36;
+    // const BOX_NUMBER = 2;
+    // const verticexCount = studCount * VERTICES_PER_BOX * BOX_NUMBER * 3; // 1 top
+    //
+    // const selection = new THREE.BufferGeometry();
+    //
+    // // Positions
+    // const vertices = new Float32Array(verticexCount * 3);
+    // selection.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    // // Normals
+    // const normals = new Float32Array(verticexCount * 3);
+    // selection.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
+    //
+    // const boxGeometry = new THREE.BoxBufferGeometry(
+    //   (this.width * 20) - blockGap,
+    //   (this.height * 8) - blockGap,
+    //   (this.depth * 20) - blockGap
+    // ).toNonIndexed();
+    // boxGeometry.removeAttribute('color');
+    // boxGeometry.removeAttribute('uv');
+    // // Make it sit on the ground at x,y,z
+    // boxGeometry.translate(0, (this.height * 4) + (blockGap / 2), 0);
+    // selection.merge(boxGeometry, 0);
+    //
+    //
+    // let offset = boxGeometry.attributes.position.count;
+    // const blockHeight = 8;
+    // const blockWidth = 20;
+    // const studHeight = 4;
+    // const y = (studHeight / 2) + (blockHeight * this.height);
+    // for (let i = 0; i < this.width; i++) {
+    //   const x = (((-blockWidth / 2) * this.width) + (blockWidth / 2)) + (blockWidth * i);
+    //   for (let j = 0; j < this.depth; j++) {
+    //     const z = (((-blockWidth / 2) * this.depth) + (blockWidth / 2)) + (blockWidth * j);
+    //
+    //     const studGeometry = new THREE.BoxBufferGeometry(12, 4, 12).toNonIndexed();
+    //     studGeometry.removeAttribute('color');
+    //     studGeometry.removeAttribute('uv');
+    //     // Make it sit on the ground at x,y,z
+    //     //studGeometry.translate(0, 2 + (blockGap / 2), 0);
+    //     studGeometry.translate(x, y, z);
+    //     selection.merge(studGeometry, offset);
+    //
+    //     offset += studGeometry.attributes.position.count;
+    //   }
+    // }
+    //
+    // selection.translate(this._position.x, this._position.y, this._position.z);
+    // return selection;
   }
+
+  // getSelectable() {
+  //   return this.getBufferGeometry();
+  // }
 
 }
 

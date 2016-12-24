@@ -30,7 +30,7 @@ class Engine {
   /**
    * @constructor
    */
-  constructor() {
+  constructor(options) {
     this._isRunning = false;
     this._ui = false;
     this._camera = null;
@@ -41,16 +41,17 @@ class Engine {
     this._highlight = null;
     this.frameno = 0;
     this.focused = true;
+    this._canvas = options.canvas;
 
     // This handles when user cmd-tab away from fullscreen
     window.onfocus = () => {
       this.focused = true;
-      debug.log('window.onfocus');
+      //debug.log('window.onfocus');
       this._fullscreenChange();
     };
     window.onblur = () => {
       this.focused = false;
-      debug.log('window.onblur');
+      //debug.log('window.onblur');
       this._fullscreenChange();
     };
   }
@@ -99,17 +100,23 @@ class Engine {
 
   onWindowResize() {
     if (this._ui && this._renderer && this._camera) {
-      const width = this._ui.offsetWidth;
-      const height = this._ui.offsetHeight;
-      this._renderer.setSize(width, height);
-      this._camera.aspect = (width / height);
-      this._camera.updateProjectionMatrix();
+      this.setSize();
     }
   }
 
   //--------------------------------------------------------------------------
   // Graphics - Three.js
   //--------------------------------------------------------------------------
+
+  setSize() {
+    console.log(`${this._ui.offsetWidth}x${this._ui.offsetHeight}`);
+    // TODO: Respect the fullscreen aspect ratio...
+    // const width = this._ui.offsetWidth;
+    // const height = this._ui.offsetHeight;
+    // this._renderer.setSize(width, height, false);
+    // this._camera.aspect = (width / height);
+    // this._camera.updateProjectionMatrix();
+  }
 
   initScene(
     options = {
@@ -120,9 +127,10 @@ class Engine {
       },
     }
   ) {
-    const width = this._ui.offsetWidth;
-    const height = this._ui.offsetHeight;
-    const aspectRatio = width / height;
+    // const width = this._ui.offsetWidth;
+    // const height = this._ui.offsetHeight;
+    // const aspectRatio = width / height;
+    const aspectRatio = this._canvas.offsetWidth / this._canvas.offsetHeight;
 
     //----------------------------------
     // Scene
@@ -155,12 +163,10 @@ class Engine {
     //----------------------------------
     // Renderer
     //----------------------------------
-    this._renderer = new THREE.WebGLRenderer();
-    this._renderer.setSize(width, height);
+    this._renderer = new THREE.WebGLRenderer({ canvas: this._canvas });
     this._renderer.setClearColor(0x0f0f0f);
     this._renderer.setPixelRatio(window.devicePixelRatio);
     this._renderer.autoClear = false;
-    this._ui.appendChild(this._renderer.domElement);
 
     // FPS stats
     this.stats = new Stats();
@@ -192,50 +198,39 @@ class Engine {
     this._renderer.render(this.scene, this._camera);
     this._renderer.clearDepth();
     this._renderer.render(this.sceneui, this._camera);
-    if (this.frameno < 10) {
-      debug.log(`engine.drawScene: ${this.profiler.mark()}`);
-    }
   }
 
   update(frameno) {
     const time = window.performance.now();
     const delta = (time - this._prevTime) / 1000;
 
+
     this.controls.update(delta);
+
 
     this.crosshair.update(delta, frameno);
     this._highlight.update(delta, frameno);
     this._prevTime = time;
-    if (this.frameno < 10) {
-      debug.log(`engine.update: ${this.profiler.mark()}`);
-    }
   }
 
   animate() {
     this.stats.begin();
-    if (this.frameno < 10) {
-      debug.log(`engine.animate start: ${this.profiler.mark()}`);
-    }
 
     if (this._isRunning) {
       window.requestAnimationFrame(this.animate.bind(this));
     }
 
+
     this.update(this.frameno);    // Update Objects
     this.frameno++;
-    this.drawScene(); // Draw the objects
 
-    if (this.frameno < 10) {
-      debug.log(`engine.animate end: ${this.profiler.mark()}`);
-    }
+    this.drawScene(); // Draw the objects
 
     this.stats.end();
   }
 
   start() {
-    debug.log(`engine.start: ${this.profiler.mark()}`);
     this.initScene();
-    debug.log(`engine.initScene: ${this.profiler.mark()}`);
     this._isRunning = true;
     this.animate();
   }

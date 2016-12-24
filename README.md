@@ -77,6 +77,7 @@ Chrome:
 
 Resources:
 
+* Profiling webgl - https://www.html5rocks.com/en/tutorials/games/abouttracing/
 * Three.js examples - http://stemkoski.github.io/Three.js/
 * three.js game extensions - http://www.threejsgames.com/extensions/
 * Static Memory Javascript - http://www.html5rocks.com/en/tutorials/speed/static-mem-pools/

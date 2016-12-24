@@ -27,7 +27,7 @@ class Highlight extends THREE.LineSegments {
     // Prepare for drawing the highlight
     const geometry = new THREE.BufferGeometry();
     // why 72?
-    geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(72), 3));
+    geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(73800), 3));
     const material = new THREE.LineBasicMaterial({
       color: options.color,
       linewidth: options.lineWidth,

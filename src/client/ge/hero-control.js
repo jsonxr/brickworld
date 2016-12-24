@@ -18,7 +18,7 @@ class HeroControl extends PointerLockControl {
     this._states = [new StandardState()];
     this._keys = [];
     this._mouseButtons = [];
-    this._keyPresses = '';
+
     // KeyDown
     this._onKeyDown = this.doKeyDown.bind(this);
     window.addEventListener('keydown', this._onKeyDown, false);
@@ -37,27 +37,29 @@ class HeroControl extends PointerLockControl {
     // MouseMove
     this._onMouseMove = this.doMouseMove2.bind(this);
     window.addEventListener('mousemove', this._onMouseMove, false); // was document.addEventListener...
-    this._state = new StandardState();
   }
 
   doKeyDown(event) {
     // Prevent TAB character because it messes with focus
-    if (event.keyCode === KeyEvents.DOM_VK_TAB) {
+    if (event.keyCode === KeyEvents.DOM_VK_TAB || event.keyCode === [KeyEvents.DOM_VK_SLASH]) {
       event.preventDefault();
     }
     this._keys[event.keyCode] = true;
   }
 
   doKeyUp(event) {
+    if (event.keyCode === KeyEvents.DOM_VK_TAB || event.keyCode === [KeyEvents.DOM_VK_SLASH]) {
+      event.preventDefault();
+    }
     //event.preventDefault();
     delete this._keys[event.keyCode];
   }
 
   doKeyPress(event) {
-    // Do nothing
-    if (event.key && event.key.length === 1) {
-      this._keyPresses += event.key;
+    if (event.keyCode === KeyEvents.DOM_VK_TAB || event.keyCode === [KeyEvents.DOM_VK_SLASH]) {
+      event.preventDefault();
     }
+    this._keyPressed = event.key;
   }
 
   doMouseDown(event) {
@@ -86,14 +88,11 @@ class HeroControl extends PointerLockControl {
     return this._mouseButtons;
   }
 
-  clearKeyPresses() {
-    this._keyPresses = '';
+  get keyPressed() {
+    const value = this._keyPressed;
+    this._keyPressed = undefined;
+    return value;
   }
-
-  get keyPresses() {
-    return this._keyPresses;
-  }
-
   update(delta) {
     const state = this._states[this._states.length - 1];
     const nextState = state.update(this, delta);

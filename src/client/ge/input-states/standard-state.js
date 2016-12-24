@@ -19,17 +19,16 @@ class StandardState {
   exit() { }
 
   update(controls, delta) {
-    this.command = (controls.keys[KeyEvents.DOM_VK_SLASH]);
-    if (this.command) {
-      controls.clearKeyPresses();
+    const keyPressed = controls.keyPressed;
+    if (keyPressed === '/') {
       return new CommandState();
     }
     this.moveForward = (controls.keys[KeyEvents.DOM_VK_W] || controls.keys[KeyEvents.DOM_VK_UP]);
     this.moveLeft = (controls.keys[KeyEvents.DOM_VK_LEFT] || controls.keys[KeyEvents.DOM_VK_A]);
     this.moveBackward = (controls.keys[KeyEvents.DOM_VK_DOWN] || controls.keys[KeyEvents.DOM_VK_S]);
     this.moveRight = (controls.keys[KeyEvents.DOM_VK_RIGHT] || controls.keys[KeyEvents.DOM_VK_D]);
-    this.moveUp = (controls.keys[KeyEvents.DOM_VK_PAGE_UP]);
-    this.moveDown = (controls.keys[KeyEvents.DOM_VK_PAGE_DOWN]);
+    this.moveUp = (controls.keys[KeyEvents.DOM_VK_PAGE_UP] || controls.keys[KeyEvents.DOM_VK_Q]);
+    this.moveDown = (controls.keys[KeyEvents.DOM_VK_PAGE_DOWN] || controls.keys[KeyEvents.DOM_VK_Z]);
     controls.mouseLeft = (controls.mouseButtons[0]);
     controls.mouseMiddle = (controls.mouseButtons[1]);
     controls.mouseRight = (controls.mouseButtons[2]);

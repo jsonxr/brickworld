@@ -5,6 +5,7 @@
 .idea
 LICENSE
 README.md
+bin
 coverage
 dist
 node_modules

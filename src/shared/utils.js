@@ -1,7 +1,6 @@
 
 function setOptions(obj, values, ignore = []) {
   if ( values === undefined ) return;
-  console.log('setOptions from values: ', values);
   for (let key of Object.keys(values)) {
     if (ignore && ignore.indexOf(key) >= 0) {
       console.warn(`Brick: ignoring key '${key}'.`);
@@ -15,6 +14,7 @@ function setOptions(obj, values, ignore = []) {
     // Check that it exists on this object
     const currentValue = obj[key];
     if (currentValue === undefined) {
+      console.log(values);
       console.warn(`Brick: '${key}' is not a property.`);
       continue;
     }

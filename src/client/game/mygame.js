@@ -4,7 +4,7 @@ import Chunk from './chunk';
 import colors from '../../shared/colors';
 import Storage from '../ge/storage';
 import { BRICK_WIDTH, BRICK_HEIGHT } from '../../shared/brick-geometry';
-
+import kateChunk from './kate-chunk';
 
 function addBottomPlate(chunk) {
   const b = new Brick({ width: 32, depth: 32, height: 0.5, color: '#9BA19D', position: [0, -4, 0] });
@@ -116,23 +116,19 @@ function loadCubeMap() {
     'cubemaps/py.jpg', 'cubemaps/ny.jpg',
     'cubemaps/pz.jpg', 'cubemaps/nz.jpg'
   ];
-  const refractionCube = new THREE.CubeTextureLoader().load( urls );
-  refractionCube.mapping = THREE.CubeRefractionMapping;
-  refractionCube.format = THREE.RGBFormat;
-  return refractionCube;
+  const reflectionCube = new THREE.CubeTextureLoader().load( urls );
+  reflectionCube.format = THREE.RGBFormat;
+  return reflectionCube;
 }
 
 class MyGame extends Engine {
 
-  constructor() {
-    super();
+  constructor(options) {
+    super(options);
     this.storage = new Storage();
   }
 
   initScene() {
-    if (this.frameno < 10) {
-      console.log(`before super.initScene: ${this.profiler.mark()}`);
-    }
     super.initScene();
 
     // Todo: Pass the id in when we create the game instead
@@ -141,34 +137,28 @@ class MyGame extends Engine {
       history: document.getElementById('commandhistory')
     };
 
-    if (this.frameno < 10) {
-      console.log(`after super.initScene: ${this.profiler.mark()}`);
-    }
     //----------------------------------
     // Lights
     //----------------------------------
     const light = new THREE.AmbientLight(0x808080); // soft white light
     light.name = 'Ambient';
     this.scene.add(light);
-    console.log(`create light: ${this.profiler.mark()}`);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
     directionalLight.name = 'Sun';
     directionalLight.position.set(0.2, 1, 0.2);
     this.scene.add(directionalLight);
-    console.log(`create directional light: ${this.profiler.mark()}`);
 
     const pointLight = new THREE.PointLight(0xFFFFFF);
     pointLight.name = 'Point';
     pointLight.position.set(10, 30, 130);
     this.scene.add(pointLight);
-    console.log(`create point light: ${this.profiler.mark()}`);
 
     //----------------------------------
     // Add Geometry
     //----------------------------------
     const reflectionCube = loadCubeMap();
-    //this.scene.background = reflectionCube;
+    this.scene.background = reflectionCube;
 
     // const refractionCube = loadCubeMap();
     // refractionCube.mapping = THREE.CubeRefractionMapping;
@@ -179,30 +169,31 @@ class MyGame extends Engine {
       vertexColors: THREE.VertexColors,
       //precision: 'highp',
       envMap: reflectionCube,
-      refractionRatio: 0.95,
-      reflectivity: 0.3,
+      //refractionRatio: 0.35,
+      envMapIntensity: 1.0,
+      refractionRatio: 0.98,
+      roughness: 0.6,
+      metalness: 0.2,
+      //reflectivity: 0.3,
       //metalness: 0.5,
       //roughness: 0.98,
     });
 
     this.controls.position.set(0, 88, 20 * 3); // Set starting position
 
-    this.chunk = this.createChunk();
+    this.chunk = this.createChunk(kateChunk);
     addLotsOfBricks(this.chunk, { width: 29, depth: 1, height: 1, offsets: [0,0,0]});
     this.scene.add(this.chunk.studMesh);
     this.scene.add(this.chunk.brickMesh);
     this.highlight.selectable = this.chunk.getSelectable();
     //addNormals(bricks, this.scene);
 
-    if (this.frameno < 10) {
-      console.log(`game.initScene: ${this.profiler.mark()}`);
-    }
-
     // this.highlight.onSelection = (intersect, positions) => {
     //   const linestodraw = this.chunk.getHighlightFromFaceIndex(intersect.faceIndex);
     //   positions.array.set(linestodraw.attributes.position.array);
     // };
   }
+
 
   // Bottom plate...
   createChunk(options) {
@@ -225,6 +216,7 @@ class MyGame extends Engine {
 
     const save = (args) => {
       const name = args[1] || this.chunk.name;
+      this.chunk.name = name;
       return this.storage.save(name, this.chunk.toJSON())
         .then( () => {
           console.log('success');
@@ -292,6 +284,7 @@ class MyGame extends Engine {
     // object.material.uniforms.sineTime.value = Math.sin( object.material.uniforms.time.value * 0.05 );
 
 
+
     // Uncomment below to enable highlight selecting
     const faceIndex = this.highlight.faceIndex;
     if (faceIndex !== null) { // 0 is a valid faceIndex, so check for null
@@ -308,6 +301,7 @@ class MyGame extends Engine {
     }
 
 
+    //console.log(`this.isFullscreen: ${this.isFullscreen} highlight: ${this.highlight.visible}`);
     if (this.isFullscreen && this.highlight.visible) {
       const brick = this.chunk.selectedBrick;
       const now = performance.now();
@@ -381,13 +375,14 @@ function logFullscreenChange(event) {
                   document.msFullscreenElement;
   // The target of the event is always the document,
   // but it is possible to retrieve the fullscreen element through the API
-  console.log('fullscreenchange', event);
-  console.log('fullscreen: ', element);
+  //console.log('fullscreenchange', event);
+  console.log(event);
   window.game.isFullscreen = (element !== undefined);
 }
 document.addEventListener('webkitfullscreenchange', logFullscreenChange);
 document.addEventListener('msfullscreenchange', logFullscreenChange);
 document.addEventListener('mozfullscreenchange', logFullscreenChange);
+document.addEventListener('fullscreenchange', logFullscreenChange);
 
 document.addEventListener('pointerlockchange', (event) => {
   // The target of the event is always the document,
@@ -400,7 +395,9 @@ document.addEventListener('pointerlockchange', (event) => {
   console.log(`pointerLockElement: ${pointerLockElement}`);
 });
 
-window.game = new MyGame();
+window.game = new MyGame({
+  canvas: document.getElementById('canvas')
+});
 setTimeout(() => { // Ensure we can fail in a source map friendly place (not index.html)
   window.game.setDomElement('ui');
   window.game.start();

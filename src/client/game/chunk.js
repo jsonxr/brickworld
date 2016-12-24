@@ -14,6 +14,7 @@ class Chunk extends Object3D {
    */
   constructor(options = {}) {
     super();
+    console.log(options);
     this.name = '-generate-unique-name-';
     this.version = 1;
     setOptions(this, options, ['bricks']);
@@ -56,9 +57,9 @@ class Chunk extends Object3D {
     this.bricks.push(brick);
     brick.index = this.bricks.length - 1;
     brick.links = {};
-    brick.links.geometries = this.geometryHeap.add(brick.getBufferGeometry());
-    brick.links.studs = this.studHeap.add(brick.getStudGeometry());
-    brick.links.selections = this.selectionHeap.add(brick.getBufferGeometry());
+    brick.links.geometries = this.geometryHeap.add(brick.geometry);
+    brick.links.studs = this.studHeap.add(brick.studGeometry);
+    brick.links.selections = this.selectionHeap.add(brick.selectionGeometry);
     this.faceList.push(brick.links.selections.start, brick.links.selections.stop, brick);
   }
 
