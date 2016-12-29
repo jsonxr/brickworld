@@ -1,3 +1,15 @@
+import {
+  BufferGeometry,
+  BufferAttribute,
+  EdgesGeometry,
+  LineSegments,
+  LineBasicMaterial,
+  Mesh,
+  MeshStandardMaterial,
+  Raycaster,
+  Vector2,
+} from 'three';
+import BufferGeometryHeap from '../../shared/buffer-geometry-heap';
 
 
 // var lineSegments = new THREE.LineSegments(
@@ -11,7 +23,7 @@ const debug = console;
  *
  * @memberOf client/ge
  */
-class Highlight extends THREE.LineSegments {
+class Highlight extends LineSegments {
 
   /**
    *
@@ -21,55 +33,79 @@ class Highlight extends THREE.LineSegments {
   constructor(camera, options = {
     distance: 200,
     color: 0xffffff,
-    lineWidth: 4,
-    domElement: window,
+    size: 144
   }) {
+    const distance = options.distance || 200;
+    const color = options.color || 0xffffff;
+    const size = options.size || 144; // 72 verts for an edge box * 2 boxes max
     // Prepare for drawing the highlight
-    const geometry = new THREE.BufferGeometry();
-    // why 72?
-    geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(73800), 3));
-    const material = new THREE.LineBasicMaterial({
-      color: options.color,
-      linewidth: options.lineWidth,
-      transparent: true,
+    const geometry = new BufferGeometry();
+    // why 72?  Because EdgeGeometry has size 72 for a box
+    geometry.addAttribute('position', new BufferAttribute(new Float32Array(size), 3)); // Need two boxes
+    const material = new LineBasicMaterial({
+      color: color,
+      //transparent: true,
     });
-
+    //const highlightEdges = new EdgesGeometry(_highlightBoxGeometry, 0.1);
     super(geometry, material);
+
+    //this._highlightBoxGeometry = _highlightBoxGeometry;
+
     this.name = 'Highlight';
+    this._heap = new BufferGeometryHeap();
+    this._selectableMesh = new Mesh(this._heap, new MeshStandardMaterial({
+      //wireframe:true
+    }));
+    this._selectableMesh.name = 'highlight';
+
     this.lines = this;
+    this._outlines = {};
     this._camera = camera;
-    this._raycaster = new THREE.Raycaster();
+    this._raycaster = new Raycaster();
     this._raycaster.near = 0;
-    this._raycaster.far = options.distance; // 8 blocks distance
-    this._ui = options.domElement;
+    this._raycaster.far = distance;
+    //this._ui = options.domElement;
     this.enabled = true;
-    this.intersect = null;
-    this._selectableMesh = null;
     this._faceIndex = null;
 
     // Track where we are pointing...
     // This is 0,0 in fullscreen mode and never changes
-    this._mouse = new THREE.Vector2(0, 0);
+    this._mouse = new Vector2(0, 0);
   }
 
-  /**
-   *
-   * @returns {object}
-   */
-  get selectable() {
-    return this._geometry;
+  get heap() {
+    return this._heap;
   }
 
-  /**
-   *
-   * @param {object} value
-   */
-  set selectable(value) {
-    this._geometry = value;
-    this._selectableMesh = new THREE.Mesh(value, new THREE.MeshStandardMaterial({
-      //wireframe:true
-    }));
-    this._selectableMesh.name = 'highlight';
+  addSelectable(obj, selectable, outline = null) {
+    const entry = {};
+    entry.obj = obj;
+    entry.outline = new EdgesGeometry(outline || selectable);  // Create edges outline from selectable if outline not available
+    entry.outline.scale(1.005, 1.005, 1.005);
+    entry.selectable = this._heap.newFromGeometry(selectable, entry);
+    return entry;
+  }
+
+  add(geometry, obj) {
+    const entry = {
+      obj: obj,
+      outline: null,
+      geometry: null
+    };
+    entry.geometry = this._heap.newFromGeometry(geometry, entry);
+    return entry.geometry;
+  }
+
+  // get selectable() {
+  //   return this._geometry;
+  // }
+
+  get selected() {
+    if (this._selectedNode && this._selectedNode.value) {
+      return this._selectedNode.value.obj;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -78,14 +114,6 @@ class Highlight extends THREE.LineSegments {
    */
   get faceIndex() {
     return this._faceIndex;
-  }
-
-  /**
-   * Set the points of the line
-   * @param value
-   */
-  setPositionsArray(value) {
-    this.geometry.attributes.position.array.set(value);
   }
 
   /**
@@ -112,38 +140,18 @@ class Highlight extends THREE.LineSegments {
     }, false);
   }
 
-  /**
-   *
-   * @param delta
-   * @param frameno
-   */
-  update(delta, frameno) {
-    // if we don't have a selectable mesh, then we don't do anything here
-    if (!this._selectableMesh) {
-      if (frameno < 10) {
-        debug.log('!this._selectableMesh', this);
-      }
-      return;
-    }
-
-    // We don't need to find the intersection if highlight is disabled
-    if (!this.enabled) {
-      this._faceIndex = null;
-      return;
-    }
-
+  getIntersection() {
     // Gather the intersections from the origin of the mouse (0,0) in the same
     // direction that the camera is looking
     this._raycaster.setFromCamera(this._mouse, this._camera);
     const intersects = this._raycaster.intersectObject(this._selectableMesh);
-
     if (intersects.length > 0) {
       // We had at least one intersection, grab the first one
       //this.visible = this.enabled && true;
-      this.intersect = intersects[0];
-      if (this.intersect.faceIndex !== this._faceIndex) {
+      const intersect = intersects[0];
+      if (intersect.faceIndex !== this._faceIndex) {
         // rollOverMesh.position.copy( this.intersect.point ).add( this.intersect.face.normal );
-        this._faceIndex = this.intersect.faceIndex;
+        this._faceIndex = intersect.faceIndex;
 
         // const linePosition = this.lines.geometry.attributes.position;
         // this.onSelection(this.intersect, linePosition);
@@ -157,6 +165,63 @@ class Highlight extends THREE.LineSegments {
       this.intersect = null;
       this._faceIndex = null;
     }
+  }
+
+  get enabled() {
+    return super.enabled;
+  }
+
+  set enabled(value) {
+    super.enabled = value;
+    this._selectedNode = null;
+    this._faceIndex = null;
+  }
+
+  /**
+   *
+   * @param delta
+   * @param frameno
+   */
+  update() {
+    // We don't need to find the intersection if highlight is disabled
+    if (!this.enabled) {
+      return;
+    }
+
+    const faceIndex = this.getIntersection();
+
+    // If this is the same face we've already seen, leave everything else the same
+    if (faceIndex === this._faceIndex) return;
+    this._faceIndex = this._faceIndex;
+    // Hide if nothing is selected
+    if (!this._faceIndex) {
+      this._selectedNode = null;
+      this.visible = false;
+      return;
+    }
+
+    // Get the currently selected node. If it is the same node, return
+    const node = this._heap.getNodeByIndex(this._faceIndex);
+    if (node === this._selectedNode) {
+      return;
+    }
+    this._selectedNode = node;
+
+    // If this node doesn't exist, hide and return
+    if (!node) {
+      this.visible = false;
+      return;
+    }
+
+    // This is a new node that we need to highlight
+    this.visible = true;
+    if (! node.value.outline) {
+      node.value.outline = new EdgesGeometry(node.value.geometry);
+      node.value.outline.scale(1.005, 1.005, 1.005);
+    }
+    const outline = node.value.outline;
+    this.geometry.attributes.position.array.set(outline.attributes.position.array);
+    this._selectedNode = node;
   }
 
   /**

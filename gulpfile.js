@@ -41,6 +41,9 @@ const LIBS_SRC = [
   // Polyfill required for safari as no indication as to when they will support
   'node_modules/whatwg-fetch/fetch.js',
 
+  // chai for assertions in code
+  'node_modules/chai/chai.js',
+
   // Three.js for rendering
   //'node_modules/three/build/three.min.js',
   'node_modules/three/build/three.js',

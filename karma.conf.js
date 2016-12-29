@@ -23,7 +23,7 @@ module.exports = function(config) {
           'traceur': 'node_modules/traceur/dist/commonjs/traceur.js',
           //'systemjs': 'node_modules/systemjs/dist/system.js',
           'three': 'node_modules/three/build/three.min.js',
-          'chai': 'node_modules/chai/chai.js'
+          'chai': 'node_modules/chai/chai.js',
           //'chai': 'https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js'
         }
       },
@@ -47,8 +47,8 @@ module.exports = function(config) {
       {pattern: 'src/**/*.json', included: false},
       {pattern: 'node_modules/chai/chai.js', included: false},
 //      {pattern: 'test/lib/karma-test-shim.js', included: true},
-      {pattern: 'test/shared/*-spec.js', included: true},
-      {pattern: 'test/client/*-spec.js', included: true},
+      {pattern: 'test/shared/*.spec.js', included: true},
+      {pattern: 'test/client/*.spec.js', included: true},
       //{pattern: 'test/client/**/*-spec.js', included: true},
     ],
 

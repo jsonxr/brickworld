@@ -75,9 +75,14 @@ Chrome:
 
     /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --js-flags=--harmony-sharedarraybuffer --enable-blink-feature=SharedArrayBuffer --enable-unsafe-es3-apis
 
-Resources:
+# Performance References
+* Optimized v8 for games - https://www.youtube.com/watch?v=XAqIpGU8ZZk
 
+      V8 --trace-bailout --trace-opt
 * Profiling webgl - https://www.html5rocks.com/en/tutorials/games/abouttracing/
+
+# Resources:
+* WebGL games - https://www.youtube.com/watch?v=huXucPChX3g google analytics in game, technical howto on certain aspects of a web game.  Heatmap of in game locations where people died 51:20. really cool.
 * Three.js examples - http://stemkoski.github.io/Three.js/
 * three.js game extensions - http://www.threejsgames.com/extensions/
 * Static Memory Javascript - http://www.html5rocks.com/en/tutorials/speed/static-mem-pools/
@@ -108,6 +113,9 @@ https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Building
 * Cylinder UV - http://stackoverflow.com/questions/8315546/texturing-a-cylinder-in-three-js
 
 * Imposters, skyboxes rendering node side... https://github.com/mrdoob/three.js/issues/7085
+* http://www.cgsociety.org/index.php/CGSFeatures/CGSFeatureSpecial/the_lego_movie3 - lego movie info
+
+* http://www.holly-wood.it/ldraw/authoring-en.html
 
 # running
 

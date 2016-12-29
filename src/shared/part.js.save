@@ -1,0 +1,104 @@
+import { getStudGeometryArrayForBrick, getStudPositionsForBrick, getBrickGeometry } from './brick-geometry';
+import { BufferAttribute, Color } from 'three';
+import Studs from './studs';
+
+function fillArrayWithColor(array, r, g, b) {
+  for (let i = 0; i < array.length; i += 3) {
+    array[i] = r;
+    array[i + 1] = g;
+    array[i + 2] = b;
+  }
+}
+
+class Part {
+  constructor(id, type, name, width, depth, height) {
+    this.id = id;
+    this.type = type;
+    this.name = name;
+    this.width = width;
+    this.depth = depth;
+    this.height = height;
+    this._geometry = null; // Cache geometry for part
+    this._studs = null; // Cache studs for part
+    this._studList = null;
+  }
+
+  get vertexCount() {
+
+  }
+
+  get studList() {
+    if (!this._studList) {
+      this._studList = new Studs();
+      this._studList.positions = getStudPositionsForBrick(this.width, this.depth, this.height);
+    }
+    return this._studList;
+  }
+
+  get geometry() {
+    if (!this._geometry) {
+      this._geometry = getBrickGeometry(this.width, this.depth, this.height);
+    }
+    return this._geometry;
+  }
+
+  createGeometry(color) {
+    const rgb = new Color(color);
+    const geometry = getBrickGeometry(this.width, this.depth, this.height);
+    // Add in the color
+    const colors = new Float32Array(geometry.attributes.position.array.length);
+    fillArrayWithColor(colors, rgb.r, rgb.g, rgb.b);
+    geometry.addAttribute('color', new BufferAttribute(colors, 3));
+    // Move to position
+    return geometry;
+  }
+
+  createStuds(color) {
+    const rgb = new Color(color);
+    const studs = getStudGeometryArrayForBrick(this.width, this.depth, this.height);
+    studs.forEach( (stud) => {
+      const colors = new Float32Array(stud.attributes.position.array.length);
+      fillArrayWithColor(colors, rgb.r, rgb.g, rgb.b);
+      stud.addAttribute('color', new BufferAttribute(colors, 3));
+    });
+    return studs;
+  }
+
+  createSelectables() {
+    const geometry = getBrickGeometry(this.width, this.depth, this.height);
+    return geometry;
+  }
+
+  toJSON() {
+    const getArray = (name) => {
+      const array = [];
+      for (const value of this.geometry.attributes[name].array) {
+        array.push(value);
+      }
+      return array;
+    };
+
+    const json = {
+      id: this.id,
+      name: this.name,
+      type: this.type,
+      positions: getArray('position'),
+      normals: getArray('normal'),
+      uvs: getArray('uv')
+    };
+
+    return json;
+  }
+
+}
+//
+// class BrickPart extends Part {
+//   constructor(options) {
+//     super(options.id, options.type, options.name);
+//     this.width = options.width;
+//     this.depth = options.depth;
+//     this.height = options.height;
+//   }
+// }
+
+export default Part;

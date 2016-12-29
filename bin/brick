@@ -1,0 +1,7 @@
+#!./node_modules/.bin/babel-node
+
+require('yargs')
+  .commandDir('../dist/cli')
+  .demand(1)
+  .help()
+  .argv;

@@ -5,8 +5,8 @@
 import Profiler from './profiler';
 import HeroControl from './hero-control';
 import Cursor3d from './cursor-3d';
-
 import Highlight from './highlight';
+import { PointLightHelper, PointLight } from 'three';
 
 
 const debug = console;
@@ -109,7 +109,7 @@ class Engine {
   //--------------------------------------------------------------------------
 
   setSize() {
-    console.log(`${this._ui.offsetWidth}x${this._ui.offsetHeight}`);
+    //console.log(`${this._ui.offsetWidth}x${this._ui.offsetHeight}`);
     // TODO: Respect the fullscreen aspect ratio...
     // const width = this._ui.offsetWidth;
     // const height = this._ui.offsetHeight;
@@ -152,6 +152,17 @@ class Engine {
                                                aspectRatio,
                                                options.camera.near,
                                                options.camera.far);
+    // Flashlight?
+    // Flashlight?
+    const flashlight = new PointLight( 0xffffff, 1, 20 * 16);
+    flashlight.position.set(0, 0, -20);
+    this._camera.add(flashlight);
+    //this.scene.add(new PointLightHelper(flashlight, 5));
+    //
+    //
+    // var pointLight2 = new PointLight( 0xff6666, 1, 20 * 16);
+    // this._camera.add( pointLight2 );
+    // this.scene.add(new PointLightHelper(pointLight2, 5));
 
     //----------------------------------
     // 3d Cursor
@@ -168,6 +179,10 @@ class Engine {
     this._renderer.setPixelRatio(window.devicePixelRatio);
     this._renderer.autoClear = false;
 
+    //TODO: Understand gamma, this means everything is pre-multiplied gamma
+    this._renderer.gammaInput = true;
+    this._renderer.gammaOutput = true;
+
     // FPS stats
     this.stats = new Stats();
     this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -176,14 +191,12 @@ class Engine {
     // Grid
     const size = 16 * 20; // 20LDU units x 16 studs
     const step = 32;
-    const gridHelper = new THREE.GridHelper(size, step);
-
-    this.scene.add(gridHelper);
+    this.gridHelper = new THREE.GridHelper(size, step);
+    this.scene.add(this.gridHelper);
 
     // FirstPerson Perspective
     //this.controls = new FirstPersonControl(this._camera);
     this.controls = new HeroControl(this);
-    this.controls.position.set(0, 88, 20 * 15); // Set starting position
     this.scene.add(this.controls);
 
     // This is used for selecting geometry...
