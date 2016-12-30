@@ -1,3 +1,4 @@
+import { EdgesGeometry } from 'three';
 import Stud from './stud';
 import { generateId } from './utils';
 import { applyToGeometry } from './brick-geometry';
@@ -18,6 +19,7 @@ class Brick {
     this._color = Object.freeze(options.color || '#C91A09');
     this._orientation = Object.freeze(options.orientation || null);
     // Set the part
+    this._chunk = null;
     this._part = null;
     this._studs = null;
     this._outline = null;
@@ -32,6 +34,13 @@ class Brick {
   //------------------------------------
   // Properties
   //------------------------------------
+  get chunk() {
+    return this._chunk;
+  }
+  set chunk(value) {
+    this._chunk = value;
+  }
+
   get color() {
     return this._color;
   }
@@ -65,6 +74,10 @@ class Brick {
     });
   }
 
+  get outline() {
+    return this._outline;
+  }
+
   get position() {
     return this._position;
   }
@@ -76,41 +89,40 @@ class Brick {
     this._studs.forEach(fn);
   }
 
-  createSelectable(highlight) {
-    // This
-    const entry = highlight.addSelectable(this, this.geometry);
-    entry.children = [];
-    // Children
-    this.forEachStud((stud) => {
-      const studEntry = stud.createSelectable(highlight);
-      applyToGeometry(studEntry.selectable, this._position, this._color, this._orientation);
-      applyToGeometry(studEntry.outline, this._position, this._color, this._orientation);
-      entry.children.push(studEntry);
-    });
-    return entry;
+  // createSelectable(highlight) {
+  //   // This
+  //   const entry = highlight.addSelectable(this, this.geometry);
+  //   entry.children = [];
+  //   // Children
+  //   this.forEachStud((stud) => {
+  //     const studEntry = stud.createSelectable(highlight);
+  //     applyToGeometry(studEntry.selectable, this._position, this._color, this._orientation);
+  //     applyToGeometry(studEntry.outline, this._position, this._color, this._orientation);
+  //     entry.children.push(studEntry);
+  //   });
+  //   return entry;
+  // }
 
-    //brickGeometry.translate(brick.position[0], brick.position[1], brick.position[2]); // Move it into place
-
-    //const partGeometry = this._part.getGeometryByLod(2);
-    //const brickGeometry = highlight.add(partGeometry, this);
-    //applyToGeometry(brickGeometry, this.position, this.color, this.orientation);
-    // Studs
-
-  }
-
-  createGeometry(heap, level = 0) {
+  createLod(level = 0) {
     if (this._geometry) {
       this._geometry.dispose();
     }
-    // This
-    this._geometry = heap.newFromGeometry(this._part.getGeometryByLod(level));
+    // This brick shape
+    this._geometry = this.chunk.geometry.newFromGeometry(this._part.getGeometryByLod(level), this);
     applyToGeometry(this._geometry, this._position, this._color, this._orientation);
-    //this._outline = this._part.outline;
+    this._selectable = this.chunk.selectable.newFromGeometry(this._geometry, this);
+    //applyToGeometry(this._selectable, this._position, null, this._orientation);
+    const outline = this.chunk.outline.newFromGeometry(this._geometry, this);
+    //applyToGeometry(outline, this._position, null, this._orientation);
+    this._outline = new EdgesGeometry(outline);
 
-    // Children
+    //   entry.outline = new EdgesGeometry(outline || selectable);  // Create edges outline from selectable if outline not available
+    //   entry.outline.scale(1.005, 1.005, 1.005);
+    //   entry.selectable = this._heap.newFromGeometry(selectable, entry)
+
+    // All the studs
     this.forEachStud((stud) => {
-      const child = stud.createGeometry(heap, level);
-      applyToGeometry(child, this._position, this._color, this._orientation);
+      stud.createLod(level);
     });
   }
 

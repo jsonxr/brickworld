@@ -4,14 +4,57 @@ import Brick from '../../shared/brick';
 import Chunk from '../../shared/chunk';
 import Materials from '../../shared/materials';
 import parts from '../../shared/parts';
+import colors from '../../shared/colors';
 import { createSceneObjects, createSelectableObjects } from '../../shared/chunk-geometry';
+import BufferGeometryHeap from '../../shared/buffer-geometry-heap';
 //import colors from '../../shared/colors';
+
+import * as brickGeometry from '../../shared/brick-geometry';
 
 import Storage from '../ge/storage';
 import kateChunk from './kate-chunk';
 import brickChunk from './brick-chunk';
-import { AmbientLight, DirectionalLight, Mesh, PointLight, PointLightHelper } from 'three';
+import oneChunk from './one-chunk';
 
+import { AmbientLight, DirectionalLight, Mesh, MeshStandardMaterial, PointLight, PointLightHelper, VertexColors } from 'three';
+
+function loadCubeMap() {
+  const urls = [
+    'textures/cube/SwedishRoyalCastle/px.jpg',
+    'textures/cube/SwedishRoyalCastle/nx.jpg',
+    'textures/cube/SwedishRoyalCastle/py.jpg',
+    'textures/cube/SwedishRoyalCastle/ny.jpg',
+    'textures/cube/SwedishRoyalCastle/pz.jpg',
+    'textures/cube/SwedishRoyalCastle/nz.jpg'
+  ];
+  const reflectionCube = new THREE.CubeTextureLoader().load(urls);
+  reflectionCube.format = THREE.RGBFormat;
+  return reflectionCube;
+}
+
+function addLotsOfBricks(chunk, options = {}) {
+  const width = options.width || 32;
+  const depth = options.depth || 10;
+  const height = options.height || 4;
+  const offsets = options.offsets || [0, 0, 0];
+  // width = 32, depth = 10, height = 4, offsets [0,0,0]
+  let color;
+  for (let i = 0; i < width; i++) {
+    for (let j = 0; j < depth; j++) {
+      for (let k = 0; k < height; k++) {
+        if (i >= 0 && i < colors.values.length) {
+          color = colors.values[i];
+        } else {
+          const colorIndex = Math.floor(Math.random() * colors.values.length);
+          color = colors.values[colorIndex];
+        }
+        const position = [i * BRICK_WIDTH - 310 + offsets[0] * BRICK_WIDTH, k * BRICK_HEIGHT * 3 + 0 + offsets[1] * BRICK_HEIGHT * 3, j * BRICK_WIDTH - 310 + offsets[2] * BRICK_WIDTH];
+        chunk.add(Brick.createFromPart(parts.getById('3005'), { color: color, position: position }));
+        //chunk.add(b);
+      }
+    }
+  }
+}
 
 class MyGame extends Engine {
 
@@ -29,23 +72,28 @@ class MyGame extends Engine {
       history: document.getElementById('commandhistory')
     };
 
+    const reflectionCube = loadCubeMap();
+    this.scene.background = reflectionCube;
     //----------------------------------
     // Lights
     //----------------------------------
-    const light = new AmbientLight(0xffffff); // soft white light
+    const light = new AmbientLight(0xffffff);//ffffff, 0.6); // soft white light
     light.name = 'Ambient';
     this.scene.add(light);
 
-    const directionalLight = new DirectionalLight(0xffffff, 0.7);
+    const directionalLight = new DirectionalLight(0xffffff, 0.5);
     directionalLight.name = 'Sun';
     directionalLight.position.set(0.2, 1, 0.2);
     this.scene.add(directionalLight);
 
-    // const pointLight = new PointLight(0xFFFFFF);
-    // pointLight.name = 'Point';
-    // pointLight.position.set(10, 30, 130);
-    // this.scene.add(pointLight);
-    // this.scene.add(new PointLightHelper(pointLight, 5));
+    const pointLight = new PointLight(0xFFFFFF);
+    pointLight.name = 'Point';
+    pointLight.position.set(10, 30, 130);
+    this.scene.add(pointLight);
+
+
+
+    //this.scene.add(new PointLightHelper(pointLight, 5));
 
     //----------------------------------
     // Add Geometry
@@ -53,21 +101,52 @@ class MyGame extends Engine {
     // const reflectionCube = loadCubeMap();
     // this.scene.background = reflectionCube;
 
-    this.brickMaterial = Materials.get(Materials.BRICK);
-    this.brickMaterial.wireframe = false;
+    this.brickMaterial = new MeshStandardMaterial({
+      vertexColors: VertexColors,
+      // refractionRatio: 0.98,
+      // roughness: 0.6,
+      // metalness: 0.2,
+      // //wireframe: false,
+      // envMap: reflectionCube,
+      // envMapIntensity: 1
+    });
 
-    // this.chunk = new Chunk();
+    const heap = new BufferGeometryHeap(1024, { uv: false });
+    let bg = heap.newFromGeometry(brickGeometry.getGeometryForBrickPart(1,1,3));
+    brickGeometry.applyToGeometry(bg, [-10,0,-10], '#05131D', null);
+    let b = new Mesh(bg, this.brickMaterial);
+    this.scene.add(b);
+    console.log('bg1', bg);
+
+    bg = heap.newFromGeometry(brickGeometry.getGeometryForBrickPart(1,1,3));
+    brickGeometry.applyToGeometry(bg, [10, 0, -10], '#C91A09', null);
+    b = new Mesh(bg, this.brickMaterial);
+    this.scene.add(b);
+    console.log('bg2', bg);
+
+
+    // this.brickMaterial = Materials.get(Materials.BRICK);
+    // this.brickMaterial.wireframe = false;
+    // this.brickMaterial.envMap = reflectionCube;
+    // this.brickMaterial.envMapIntensity = 1.0;
+
+    this.chunk = new Chunk();
+    addLotsOfBricks(this.chunk, { width: 29, depth: 1, height: 1, offsets: [0, 0, 0] });
     // this.chunk.add(Brick.createFromPart(parts.getById('3005'), { position: [-10, 0, 10] }));
     // this.chunk.add(Brick.createFromPart(parts.getById('3004'), { position: [30, 0, 0] }));
 
-    this.chunk = new Chunk(this.brickMaterial);
-    this.chunk.fromJSON(kateChunk);
-    // this.chunk.fromJSON(brickChunk);
+//    this.chunk.fromJSON(kateChunk);
+    //this.chunk.fromJSON(oneChunk);
+//    this.chunk.fromJSON(brickChunk);
 
     // build Object3d now
-    this.chunk.createGeometry(0);
+    this.chunk.createLod(0);
     this.scene.add(new Mesh(this.chunk.geometry, this.brickMaterial));
-    this.chunk.createSelectable(this.highlight);
+    console.log(this.chunk.geometry);
+    this.highlight.selectable = this.chunk.selectable;
+    this.highlight.outline = this.chunk.outline;
+
+    //this.chunk.createSelectable(this.highlight);
     //createSelectableObjects(this.chunk, this.highlight);
 
 

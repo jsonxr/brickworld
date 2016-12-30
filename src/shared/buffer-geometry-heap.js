@@ -13,6 +13,7 @@ class BufferGeometryHeap extends BufferGeometry {
     this._capacity = capacity;
     this._buffers = {};
     this._faceList = new FaceList();
+    this._objList = new WeakMap();
 
     // position
     this._buffers.position = new ArrayBuffer(this._capacity * 3 * Float32Array.BYTES_PER_ELEMENT);
@@ -63,6 +64,9 @@ class BufferGeometryHeap extends BufferGeometry {
     this._faceList.push(this._offset, this._offset + vertexCount - 1, obj);
 
     // Move the offset to the end...
+    if (typeof obj === 'object') {
+      this._objList.set(obj, { offset: this._offset }); // So we can remove all by object later.
+    }
     this._offset = this._offset + vertexCount;
 
     return newGeometry;

@@ -4,11 +4,27 @@ import Brick from './brick';
 import BufferGeometryHeap from './buffer-geometry-heap';
 
 
+class Selectables {
+  constructor() {
+    this._highlights = null;
+    this._selectables = null;
+  }
+  add(obj, selectable, outline) {
+
+  }
+  dispose() {
+    if (this._highlights) { this._highlights.dispose(); }
+    if (this._selectables) { this._selectables.dispose(); }
+  }
+}
+
 class Chunk {
   constructor() {
     this.id = generateId();
     this._bricks = new Map();
     this._geometry = null;
+    this._selectable = null;
+    this._outline = null;
   }
 
   //------------------------------------
@@ -22,6 +38,14 @@ class Chunk {
     return this._geometry;
   }
 
+  get outline() {
+    return this._outline;
+  }
+
+  get selectable() {
+    return this._selectable;
+  }
+
   //------------------------------------
   // Methods
   //------------------------------------
@@ -30,6 +54,7 @@ class Chunk {
   }
 
   add(brick) {
+    brick.chunk = this;
     this._bricks.set(brick.id, brick);
     // if (this._geometry) {
     //
@@ -45,10 +70,10 @@ class Chunk {
     // }
   }
 
-  createGeometry(level) {
-    if (this._geometry) {
-      this._geometry.dispose();
-    }
+  createLod(level) {
+    if (this._geometry) { this._geometry.dispose(); }
+    if (this._selectable) { this._selectable.dispose(); }
+    if (this._outline) { this._outline.dispose(); }
 
     // Get the vertex count of the bricks
     let vertexCount = 0;
@@ -57,16 +82,23 @@ class Chunk {
     });
     // Create the geometry
     this._geometry = new BufferGeometryHeap(vertexCount);
+    this._geometry.removeAttribute('uv');
+    this._selectable = new BufferGeometryHeap(vertexCount);
+    this._selectable.removeAttribute('uv');
+    this._selectable.removeAttribute('color');
+    this._outline = new BufferGeometryHeap(vertexCount);
+    this._outline.removeAttribute('uv');
+    this._outline.removeAttribute('color');
     this.forEachBrick( (brick) => {
-      brick.createGeometry(this._geometry, level);
+      brick.createLod(level);
     });
   }
-
-  createSelectable(highlight) {
-    this.forEachBrick( (brick) => {
-      brick.createSelectable(highlight);
-    });
-  }
+  //
+  // createSelectable(highlight) {
+  //   this.forEachBrick( (brick) => {
+  //     brick.createSelectable(highlight);
+  //   });
+  // }
 
   remove(brick) {
     this._bricks.delete(brick.id);
@@ -109,10 +141,9 @@ class Chunk {
   }
 
   dispose() {
-    if (this._geometry) {
-      this._geometry.dispose();
-      this._geometry = null;
-    }
+    if (this._geometry) { this._geometry.dispose(); this._geometry = null; }
+    if (this._selectable) { this._selectable.dispose(); this._selectable = null; }
+    if (this._outline) { this._outline.dispose(); this._outline = null; }
   }
 
 }

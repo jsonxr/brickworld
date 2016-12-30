@@ -154,9 +154,10 @@ class Engine {
                                                options.camera.far);
     // Flashlight?
     // Flashlight?
-    const flashlight = new PointLight( 0xffffff, 1, 20 * 16);
-    flashlight.position.set(0, 0, -20);
-    //this._camera.add(flashlight);
+    // const flashlight = new PointLight( 0xff6666, 1, 20 * 16);
+    // flashlight.position.set(0, 0, -20);
+    // this._camera.add(flashlight);
+
     //this.scene.add(new PointLightHelper(flashlight, 5));
     //
     //
@@ -203,7 +204,7 @@ class Engine {
     this._highlight = new Highlight(this._camera);
     this._highlight.enabled = false;
     this._highlight.name = '_highlight';
-    this.scene.add(this._highlight);
+    //this.scene.add(this._highlight);
   }
 
   drawScene() {

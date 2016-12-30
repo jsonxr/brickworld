@@ -4,22 +4,22 @@ const json = `
   "version": 1,
   "bricks": [
     {
-      "part": "3001",
-      "color": "#FF0000",
+      "part": "3005",
+      "color": "#05131D",
       "position": [
+        -310,
         0,
-        0,
-        0
+        -310
       ]
     },
     
     {
       "part": "3005",
-      "color": "#FF0000",
+      "color": "#C91A09",
       "position": [
-        30,
+        -290,
         0,
-        10
+        -310
       ]
     }
   ]

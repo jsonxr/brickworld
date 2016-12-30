@@ -52,14 +52,12 @@ class Highlight extends LineSegments {
     //this._highlightBoxGeometry = _highlightBoxGeometry;
 
     this.name = 'Highlight';
-    this._heap = new BufferGeometryHeap();
-    this._selectableMesh = new Mesh(this._heap, new MeshStandardMaterial({
-      //wireframe:true
-    }));
-    this._selectableMesh.name = 'highlight';
+    // this._heap = new BufferGeometryHeap();
+    // this._selectableMesh = new Mesh(this._heap, new MeshStandardMaterial({
+    //   //wireframe:true
+    // }));
+    // this._selectableMesh.name = 'highlight';
 
-    this.lines = this;
-    this._outlines = {};
     this._camera = camera;
     this._raycaster = new Raycaster();
     this._raycaster.near = 0;
@@ -73,28 +71,40 @@ class Highlight extends LineSegments {
     this._mouse = new Vector2(0, 0);
   }
 
-  get heap() {
-    return this._heap;
+  get enabled() {
+    return super.enabled;
   }
 
-  addSelectable(obj, selectable, outline = null) {
-    const entry = {};
-    entry.obj = obj;
-    entry.outline = new EdgesGeometry(outline || selectable);  // Create edges outline from selectable if outline not available
-    entry.outline.scale(1.005, 1.005, 1.005);
-    entry.selectable = this._heap.newFromGeometry(selectable, entry);
-    return entry;
+  set enabled(value) {
+    super.enabled = value;
+    this._selectedNode = null;
+    this._faceIndex = null;
   }
 
-  add(geometry, obj) {
-    const entry = {
-      obj: obj,
-      outline: null,
-      geometry: null
-    };
-    entry.geometry = this._heap.newFromGeometry(geometry, entry);
-    return entry.geometry;
+  set selectable(value) {
+    this._selectable = value;
+    this._selectableMesh = new Mesh(this._selectable, new MeshStandardMaterial());
+    this._selectableMesh.name = 'highlight';
   }
+
+  // addSelectable(obj, selectable, outline = null) {
+  //   const entry = {};
+  //   entry.obj = obj;
+  //   entry.outline = new EdgesGeometry(outline || selectable);  // Create edges outline from selectable if outline not available
+  //   entry.outline.scale(1.005, 1.005, 1.005);
+  //   entry.selectable = this._heap.newFromGeometry(selectable, entry);
+  //   return entry;
+  // }
+
+  // add(geometry, obj) {
+  //   const entry = {
+  //     obj: obj,
+  //     outline: null,
+  //     geometry: null
+  //   };
+  //   entry.geometry = this._heap.newFromGeometry(geometry, entry);
+  //   return entry.geometry;
+  // }
 
   // get selectable() {
   //   return this._geometry;
@@ -152,7 +162,7 @@ class Highlight extends LineSegments {
       if (intersect.faceIndex !== this._faceIndex) {
         // rollOverMesh.position.copy( this.intersect.point ).add( this.intersect.face.normal );
         this._faceIndex = intersect.faceIndex;
-
+console.log(this._faceIndex);
         // const linePosition = this.lines.geometry.attributes.position;
         // this.onSelection(this.intersect, linePosition);
 
@@ -165,16 +175,6 @@ class Highlight extends LineSegments {
       this.intersect = null;
       this._faceIndex = null;
     }
-  }
-
-  get enabled() {
-    return super.enabled;
-  }
-
-  set enabled(value) {
-    super.enabled = value;
-    this._selectedNode = null;
-    this._faceIndex = null;
   }
 
   /**
@@ -201,7 +201,7 @@ class Highlight extends LineSegments {
     }
 
     // Get the currently selected node. If it is the same node, return
-    const node = this._heap.getNodeByIndex(this._faceIndex);
+    const node = this._selectable.getNodeByIndex(this._faceIndex);
     if (node === this._selectedNode) {
       return;
     }
@@ -212,15 +212,17 @@ class Highlight extends LineSegments {
       this.visible = false;
       return;
     }
-
+    console.log(node);
     // This is a new node that we need to highlight
     this.visible = true;
-    if (! node.value.outline) {
-      node.value.outline = new EdgesGeometry(node.value.geometry);
-      node.value.outline.scale(1.005, 1.005, 1.005);
-    }
+    // if (! node.value.outline) {
+    //   node.value.outline = new EdgesGeometry(node.value.geometry);
+    //   node.value.outline.scale(1.005, 1.005, 1.005);
+    // }
     const outline = node.value.outline;
+    console.log('outline: ', outline);
     this.geometry.attributes.position.array.set(outline.attributes.position.array);
+    console.log(outline.attributes.position.array);
     this._selectedNode = node;
   }
 

@@ -133,6 +133,7 @@ function getBoxGeometryForBrickPart(width, depth, height) {
     0,
     height * BRICK_HEIGHT / 2,
     0);
+  console.log('box', geometry);
   return geometry;
 }
 
