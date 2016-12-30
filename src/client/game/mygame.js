@@ -32,11 +32,11 @@ class MyGame extends Engine {
     //----------------------------------
     // Lights
     //----------------------------------
-    const light = new AmbientLight(0xffffff, 0.1); // soft white light
+    const light = new AmbientLight(0xffffff); // soft white light
     light.name = 'Ambient';
     this.scene.add(light);
 
-    const directionalLight = new DirectionalLight(0xffffff, 0.1);
+    const directionalLight = new DirectionalLight(0xffffff, 0.7);
     directionalLight.name = 'Sun';
     directionalLight.position.set(0.2, 1, 0.2);
     this.scene.add(directionalLight);
@@ -102,23 +102,6 @@ class MyGame extends Engine {
   }
 
 
-  // Bottom plate...
-  createChunk(options) {
-    const chunk = new Chunk(options);
-    chunk.plate = addBottomPlate(chunk);
-    //addLotsOfBricks(chunk, options);
-    //add2Bricks(chunk);
-
-    const brickGeometry = chunk.getBufferGeometry();
-    chunk.brickMesh = new Mesh(brickGeometry, this.brickMaterial);
-    chunk.brickMesh.name = 'BrickMesh';
-    const studGeometry = chunk.getStudGeometry();
-    chunk.studMesh = new Mesh(studGeometry, this.brickMaterial);
-    chunk.studMesh.name = 'StudMesh';
-
-    return chunk;
-  }
-
   execute(command) {
 
     const save = (args) => {
@@ -164,26 +147,6 @@ class MyGame extends Engine {
     // object.rotation.y = time * 0.0005;
     // object.material.uniforms.time.value = time * 0.005;
     // object.material.uniforms.sineTime.value = Math.sin( object.material.uniforms.time.value * 0.05 );
-
-    //
-    //
-    // // Uncomment below to enable highlight selecting
-    // const faceIndex = this.highlight.faceIndex;
-    // //console.log(faceIndex);
-    // if (faceIndex !== null) { // 0 is a valid faceIndex, so check for null
-    //   const brick = this.chunk.getBrickFromFaceIndex(faceIndex);
-    //   //const linestodraw = this.chunk.getHighlightFromFaceIndex(faceIndex);
-    //   //TODO: get left/right node and compare to see if we need to update the
-    //   // lines to highlight.
-    //   if (brick.outline) {
-    //     this.highlight.visible = true;
-    //     //this.highlight.setPositionsArray(linestodraw.attributes.position.array);
-    //     this.highlight.geometry.attributes.position.array.set(brick.outline.attributes.position.array);
-    //   }
-    // } else {
-    //   this.highlight.visible = false;
-    // }
-    //
 
     //console.log(`this.isFullscreen: ${this.isFullscreen} highlight: ${this.highlight.visible}`);
     if (this.isFullscreen && this.highlight.visible) {

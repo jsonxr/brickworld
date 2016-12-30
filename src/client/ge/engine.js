@@ -156,7 +156,7 @@ class Engine {
     // Flashlight?
     const flashlight = new PointLight( 0xffffff, 1, 20 * 16);
     flashlight.position.set(0, 0, -20);
-    this._camera.add(flashlight);
+    //this._camera.add(flashlight);
     //this.scene.add(new PointLightHelper(flashlight, 5));
     //
     //
@@ -180,8 +180,8 @@ class Engine {
     this._renderer.autoClear = false;
 
     //TODO: Understand gamma, this means everything is pre-multiplied gamma
-    this._renderer.gammaInput = true;
-    this._renderer.gammaOutput = true;
+    this._renderer.gammaInput = false;
+    this._renderer.gammaOutput = false;
 
     // FPS stats
     this.stats = new Stats();

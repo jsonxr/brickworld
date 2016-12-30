@@ -27,7 +27,7 @@ class BrickMaterial extends MeshStandardMaterial {
     //options.wireframe = options.wireframe !== undefined ? options.wireframe : false;
     options.vertexColors = options.vertexColors || VertexColors;
     options.refractionRatio = options.refractionRatio || 0.98;
-    options.roughness = options.roughness || 0.6;
+    options.roughness = options.roughness || 0.4;
     options.metalness = options.metalness || 0.2;
     options.wireframe = (options.wireframe !== undefined) ? options.wireframe: true;
     //options.map = map;
