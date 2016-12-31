@@ -1,6 +1,10 @@
 import Part from './part';
 import Stud from './stud';
-import { getGeometryForBrickPart, getStudPositionsForBrickPart } from './brick-geometry';
+import {
+  OUTLINE_SCALE,
+  getGeometryForBrickPart,
+  getStudPositionsForBrickPart
+} from './brick-geometry';
 
 
 const json = {
@@ -80,9 +84,6 @@ class Parts {
       const part = new Part({ id: key, type: obj.type, name: obj.name});
       // Push the brick and studs
       part.pushGeometryLod(getGeometryForBrickPart(obj.width, obj.depth, obj.height, 'none'));
-      //part.pushGeometryLod(getGeometryForBrickPart(obj.width, obj.depth, obj.height, 'round'));
-      // Just the brick
-      //part.pushGeometryLod(getGeometryForBrickPart(obj.width, obj.depth, obj.height, 'square'));
 
       const studs = [];
       const positions = getStudPositionsForBrickPart(obj.width, obj.depth, obj.height);
@@ -90,6 +91,10 @@ class Parts {
         studs.push(new Stud(part, { position: position }));
       });
       part.studs = studs;
+      // Outline
+      part.outline = getGeometryForBrickPart(obj.width, obj.depth, obj.height, 'none');
+      part.outline.scale(OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_SCALE);
+      // Selection
       this._parts[key] = part;
     });
   }

@@ -2,6 +2,7 @@ import {
   BufferGeometry,
   BufferAttribute,
   EdgesGeometry,
+  Float32BufferAttribute,
   LineSegments,
   LineBasicMaterial,
   Mesh,
@@ -9,7 +10,8 @@ import {
   Raycaster,
   Vector2,
 } from 'three';
-import BufferGeometryHeap from '../../shared/buffer-geometry-heap';
+import { OUTLINE_SCALE } from '../../shared/brick-geometry';
+import { threeColors } from '../../shared/colors';
 
 
 // var lineSegments = new THREE.LineSegments(
@@ -18,6 +20,9 @@ import BufferGeometryHeap from '../../shared/buffer-geometry-heap';
 // );
 // scene.add(lineSegments);
 const debug = console;
+
+const EDGES_SIZE = 24 * 3 * 2; // 24 verts EdgeGeometry box, * 3 floats * 2 boxes
+const OUTLINE_GEOMETRY_SIZE = 36 * 3 * 2; // 36 verts for box * 3 floats * 2 boxes
 
 /**
  *
@@ -30,41 +35,36 @@ class Highlight extends LineSegments {
    * @param camera
    * @param options
    */
-  constructor(camera, options = {
-    distance: 200,
-    color: 0xffffff,
-    size: 144
-  }) {
+  constructor(camera, options = {}) {
     const distance = options.distance || 200;
-    const color = options.color || 0xffffff;
-    const size = options.size || 144; // 72 verts for an edge box * 2 boxes max
+    const size = options.size || EDGES_SIZE; // 24 verts EdgeGeometry box, 36 verts for a box
+
+    // why 72?  Because EdgeGeometry has size 72 for a box
     // Prepare for drawing the highlight
     const geometry = new BufferGeometry();
-    // why 72?  Because EdgeGeometry has size 72 for a box
     geometry.addAttribute('position', new BufferAttribute(new Float32Array(size), 3)); // Need two boxes
-    const material = new LineBasicMaterial({
-      color: color,
-      //transparent: true,
-    });
-    //const highlightEdges = new EdgesGeometry(_highlightBoxGeometry, 0.1);
+    geometry.attributes.position.dynamic = true; // We will change this a lot so hint to GPU
+    const material = new LineBasicMaterial({});
+
     super(geometry, material);
 
-    //this._highlightBoxGeometry = _highlightBoxGeometry;
-
     this.name = 'Highlight';
-    // this._heap = new BufferGeometryHeap();
-    // this._selectableMesh = new Mesh(this._heap, new MeshStandardMaterial({
-    //   //wireframe:true
-    // }));
-    // this._selectableMesh.name = 'highlight';
+    this.frustumCulled = false; // This must be false or else, it doesn't always paint outline at low angles
+    this.enabled = true;
 
+    this._selectables = null;
     this._camera = camera;
     this._raycaster = new Raycaster();
     this._raycaster.near = 0;
     this._raycaster.far = distance;
-    //this._ui = options.domElement;
-    this.enabled = true;
-    this._faceIndex = null;
+    // Used for Caching the highlight
+    this._faceIndex = null; // Cache
+    this._selectedNode = null; // Cache
+    // Place to temporarily hold the geometry to create our edges
+    this._outline = new BufferGeometry();
+    this._outline.addAttribute('position', new Float32BufferAttribute(OUTLINE_GEOMETRY_SIZE,3));
+    this._outline.addAttribute('normal', new Float32BufferAttribute(OUTLINE_GEOMETRY_SIZE,3));
+    this._outline.addAttribute('color', new Float32BufferAttribute(OUTLINE_GEOMETRY_SIZE,3));
 
     // Track where we are pointing...
     // This is 0,0 in fullscreen mode and never changes
@@ -77,16 +77,35 @@ class Highlight extends LineSegments {
 
   set enabled(value) {
     super.enabled = value;
-    this._selectedNode = null;
-    this._faceIndex = null;
+    if (!super.enabled) {
+      this._selectedNode = null;
+      this._faceIndex = null;
+      this.visible = false;
+    }
   }
 
-  set selectable(value) {
-    this._selectable = value;
-    this._selectableMesh = new Mesh(this._selectable, new MeshStandardMaterial());
-    this._selectableMesh.name = 'highlight';
+  get selectables() {
+    return this._selectables;
   }
 
+  set selectables(value) {
+    this._selectables = value;
+    if (value) {
+      // Need the selectable mesh in order
+      this._selectableMesh = new Mesh(this._selectables, new MeshStandardMaterial({
+        wireframe: true
+      }));
+      this._selectableMesh.name = 'highlight';
+      // This must be false or else, it doesn't always paint outline at low angles
+      this._selectableMesh.frustumCulled = false;
+    } else {
+      this._selectableMesh = null;
+    }
+  }
+
+  get mesh() {
+    return this._selectableMesh;
+  }
   // addSelectable(obj, selectable, outline = null) {
   //   const entry = {};
   //   entry.obj = obj;
@@ -112,7 +131,7 @@ class Highlight extends LineSegments {
 
   get selected() {
     if (this._selectedNode && this._selectedNode.value) {
-      return this._selectedNode.value.obj;
+      return this._selectedNode.value;
     } else {
       return null;
     }
@@ -150,33 +169,6 @@ class Highlight extends LineSegments {
     }, false);
   }
 
-  getIntersection() {
-    // Gather the intersections from the origin of the mouse (0,0) in the same
-    // direction that the camera is looking
-    this._raycaster.setFromCamera(this._mouse, this._camera);
-    const intersects = this._raycaster.intersectObject(this._selectableMesh);
-    if (intersects.length > 0) {
-      // We had at least one intersection, grab the first one
-      //this.visible = this.enabled && true;
-      const intersect = intersects[0];
-      if (intersect.faceIndex !== this._faceIndex) {
-        // rollOverMesh.position.copy( this.intersect.point ).add( this.intersect.face.normal );
-        this._faceIndex = intersect.faceIndex;
-console.log(this._faceIndex);
-        // const linePosition = this.lines.geometry.attributes.position;
-        // this.onSelection(this.intersect, linePosition);
-
-        // why do we have to update the matrix here?
-        this._selectableMesh.updateMatrix();
-        this.geometry.applyMatrix(this._selectableMesh.matrix);
-      }
-    } else {
-      //this.visible = false;
-      this.intersect = null;
-      this._faceIndex = null;
-    }
-  }
-
   /**
    *
    * @param delta
@@ -188,58 +180,65 @@ console.log(this._faceIndex);
       return;
     }
 
-    const faceIndex = this.getIntersection();
-
-    // If this is the same face we've already seen, leave everything else the same
-    if (faceIndex === this._faceIndex) return;
-    this._faceIndex = this._faceIndex;
-    // Hide if nothing is selected
-    if (!this._faceIndex) {
+    // Get the intersections...
+    this._raycaster.setFromCamera(this._mouse, this._camera);
+    const intersects = this._raycaster.intersectObject(this._selectableMesh);
+    if (intersects.length === 0) {
+      // no intersections, so just hide the outline
       this._selectedNode = null;
+      this._faceIndex = null;
       this.visible = false;
       return;
     }
 
+    const faceIndex = intersects[0].faceIndex;
+    // If this is the same face we are already on, leave everything as is
+    if (faceIndex === this._faceIndex) {
+      return;
+    }
+    this._faceIndex = faceIndex;
+
     // Get the currently selected node. If it is the same node, return
-    const node = this._selectable.getNodeByIndex(this._faceIndex);
+    const node = this._selectables.getNodeByIndex(this._faceIndex);
+    // If this node doesn't exist, hide and return
+    if (!node) {
+      throw Error('Could not find node, some kinda bug.');
+    }
+
     if (node === this._selectedNode) {
       return;
     }
     this._selectedNode = node;
 
-    // If this node doesn't exist, hide and return
-    if (!node) {
-      this.visible = false;
-      return;
-    }
-    console.log(node);
     // This is a new node that we need to highlight
     this.visible = true;
-    // if (! node.value.outline) {
-    //   node.value.outline = new EdgesGeometry(node.value.geometry);
-    //   node.value.outline.scale(1.005, 1.005, 1.005);
-    // }
-    const outline = node.value.outline;
-    console.log('outline: ', outline);
+    // const outline = this.chunk.outline.newBuffer(vertexCount, this);
+    // outline.merge(GEOMETRY_STUD_BOX, 0);
+    // outline.scale(OUTLINE_SCALE,OUTLINE_SCALE,OUTLINE_SCALE); // Scale the geometry first
+    // applyToGeometry(outline, this._position, null, this._orientation); // ours
+    // applyToGeometry(outline, this._brick.position, null, this._brick.orientation); // Parent's
+    // outline.merge(this._brick.geometry, GEOMETRY_STUD_BOX.attributes.position.count);
+    //this._outline = new EdgesGeometry(node.value.outline);
+    this._outline.attributes.position.array.set(node.value.outline.attributes.position.array);
+    this._outline.attributes.normal.array.set(node.value.outline.attributes.normal.array);
+
+    this._outline.scale(OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_SCALE);
+    this._outline.applyMatrix(node.value.matrix);
+
+    const outline = new EdgesGeometry(this._outline);
+
+
+
+
+    // Fill the end of the array with zeros if the outline is less than our buffer
+    if (outline.attributes.position.array.length < this.geometry.attributes.position.array.length) {
+      this.geometry.attributes.position.array.fill(0, outline.attributes.position.array.length);
+    }
     this.geometry.attributes.position.array.set(outline.attributes.position.array);
-    console.log(outline.attributes.position.array);
-    this._selectedNode = node;
+    this.geometry.attributes.position.needsUpdate = true;
+    this.material.color = threeColors[node.value.color.edge];
   }
 
-  /**
-   *
-   * @param intersect
-   * @param positions
-   */
-  onSelection(intersect, positions) {
-    debug.log('onSelection!');
-    const face = this.intersect.face;
-    const meshPosition = this._selectableMesh.geometry.attributes.position;
-    positions.copyAt(0, meshPosition, face.a);
-    positions.copyAt(1, meshPosition, face.b);
-    positions.copyAt(2, meshPosition, face.c);
-    positions.copyAt(3, meshPosition, face.a);
-  }
 }
 
 export default Highlight;

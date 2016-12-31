@@ -2,24 +2,24 @@ const json = `
 {
   "name": "kate",
   "version": 1,
+  "position": [-640,0,0],
   "bricks": [
     {
-      "part": "3005",
-      "color": "#05131D",
+      "part": "3811",
+      "color": "208",
       "position": [
-        -310,
         0,
-        -310
+        -3,
+        0
       ]
     },
-    
     {
       "part": "3005",
-      "color": "#C91A09",
+      "color": "21",
       "position": [
-        -290,
+        -10,
         0,
-        -310
+        -10
       ]
     }
   ]

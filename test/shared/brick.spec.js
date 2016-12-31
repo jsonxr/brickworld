@@ -35,8 +35,6 @@ describe('shared/brick', () => {
       const brick = new Brick(options);
       assert(brick.color);
       assert.equal(brick.color, options.color);
-      assert(brick.part);
-      assert.equal(brick.part, options.part);
       assert(brick.position);
       assert.equal(brick.position, options.position);
       assert(brick.orientation);

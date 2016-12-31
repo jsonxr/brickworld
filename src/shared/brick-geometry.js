@@ -14,6 +14,7 @@ const BRICK_WIDTH = 20;
 const STUD_HEIGHT = 4;
 const STUD_RADIUS = 6;
 const STUD_RADIUS_SEGMENTS = 16;
+const OUTLINE_SCALE = 1.001;
 
 const uvs = new Float32Array([
   0,0,   0,0,   0,0,      0,0,   0,0,   0,0,   // +x
@@ -65,7 +66,10 @@ const GEOMETRY_STUD = (function getStudGeometry() {
 })();
 
 function fillArrayWithColor(array, color) {
-  const rgb = new Color(color);
+  if (array.length % 3 > 0) {
+    throw new Error('Array must be in multiples of 3')
+  }
+  const rgb = new Color(color.value);
   for (let i = 0; i < array.length; i += 3) {
     array[i] = rgb.r;
     array[i + 1] = rgb.g;
@@ -88,7 +92,10 @@ function applyToGeometry(geometry, position, color, orientation) {
     }
     geometry.applyMatrix(mat);
   }
-  if (geometry.attributes.color && color) {
+  if (color) {
+    if (!geometry.attributes.color) {
+      throw new Error('geometry must have a color array to fill.');
+    }
     fillArrayWithColor(geometry.attributes.color.array, color);
   }
 }
@@ -133,7 +140,6 @@ function getBoxGeometryForBrickPart(width, depth, height) {
     0,
     height * BRICK_HEIGHT / 2,
     0);
-  console.log('box', geometry);
   return geometry;
 }
 
@@ -171,7 +177,7 @@ function getStudPositionsForBrickPart(width, depth, height) {
 }
 
 export {
-  GEOMETRY_STUD,
+  GEOMETRY_STUD_BOX as GEOMETRY_STUD,
   GEOMETRY_STUD_BOX,
   GEOMETRY_STUD_SELECT_BOX,
   BRICK_HEIGHT,
@@ -179,6 +185,7 @@ export {
   STUD_HEIGHT,
   STUD_RADIUS,
   STUD_RADIUS_SEGMENTS,
+  OUTLINE_SCALE,
 
   applyToGeometry,
   fillArrayWithColor,

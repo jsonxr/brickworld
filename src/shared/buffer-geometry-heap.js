@@ -8,6 +8,9 @@ const debug = createDebug('buffer-geometry-heap');
 class BufferGeometryHeap extends BufferGeometry {
   constructor(capacity, options = {}) {
     debug(`buffer-geometry-heap: constructor(${capacity})`);
+    if (!capacity) {
+      throw new Error('Must set an initial capacity.');
+    }
     super();
     this._offset = 0;
     this._capacity = capacity;
@@ -17,6 +20,7 @@ class BufferGeometryHeap extends BufferGeometry {
 
     // position
     this._buffers.position = new ArrayBuffer(this._capacity * 3 * Float32Array.BYTES_PER_ELEMENT);
+    this._positions = new Float32Array(this._buffers.position);
     this.addAttribute('position', new BufferAttribute(new Float32Array(this._buffers.position), 3)); // x,y,z
     // normal
     if (options.normal !== false) {
@@ -35,39 +39,60 @@ class BufferGeometryHeap extends BufferGeometry {
     }
   }
 
+  newBuffer(vertexCount, obj) {
+    const newGeometry = new BufferGeometry(vertexCount);
+    this.growToFit(this._offset + vertexCount);
+    this._faceList.push(this._offset, this._offset + vertexCount - 1, obj);
+    // So we can remove all by object later.
+    const createViewIntoBuffer = (name) => {
+      // Normal... vertex=x,y,z
+      const itemSize = this.attributes[name].itemSize;
+      const byteOffset = this._offset * itemSize * Float32Array.BYTES_PER_ELEMENT;
+      const floatCount = vertexCount * itemSize;
+      const array = new Float32Array(this._buffers[name], byteOffset, floatCount);
+      newGeometry.addAttribute(name, new BufferAttribute(array, itemSize));
+    };
+
+    // Create a view for each attribute we have
+    Object.keys(this.attributes).forEach( (key) => {
+      createViewIntoBuffer(key);
+    });
+
+    // Save the geometry that we hand out so we can do stuff with it later
+    const entry = {
+      offset: this._offset,
+      count: vertexCount,
+      geometry: newGeometry
+    };
+    if (typeof obj === 'object') {
+      this._objList.set(obj, entry);
+    }
+
+    // Move the offset to the end...
+    this._offset = this._offset + vertexCount;
+
+    return newGeometry;
+  }
+
   newFromGeometry(geometryToCopy, obj) {
     debug(`buffer-geometry-heap: newFromGeometry(geometryToCopy, ${obj})`);
     const vertexCount = geometryToCopy.attributes.position.count;
-    const newGeometry = new BufferGeometry(vertexCount);
-    this.growToFit(this._offset + vertexCount);
+    const newGeometry = this.newBuffer(vertexCount, obj);
 
-    const copyToBufferWindow = (geometry, name) => {
-      if (! this.attributes[name]) return; // Only copy buffers that exist in this heap
-      // Normal... vertex=x,y,z
-      const itemSize = this.attributes[name].itemSize;
-      const offset = this._offset * itemSize * Float32Array.BYTES_PER_ELEMENT;
-      const length = vertexCount * itemSize;// * Float32Array.BYTES_PER_ELEMENT;
-      const array = new Float32Array(this._buffers[name], offset, length);
+    const copyToBufferWindow = (name) => {
+      const array = newGeometry.attributes[name].array;
       if (geometryToCopy.attributes[name]) {
         array.set(geometryToCopy.attributes[name].array);
       } else {
         array.fill(0);
       }
-      newGeometry.addAttribute(name, new BufferAttribute(array, itemSize));
+      this.attributes[name].needsUpdate = true;
     };
 
-    copyToBufferWindow(geometryToCopy, 'position');
-    copyToBufferWindow(geometryToCopy, 'normal');
-    copyToBufferWindow(geometryToCopy, 'color');
-    copyToBufferWindow(geometryToCopy, 'uv');
-
-    this._faceList.push(this._offset, this._offset + vertexCount - 1, obj);
-
-    // Move the offset to the end...
-    if (typeof obj === 'object') {
-      this._objList.set(obj, { offset: this._offset }); // So we can remove all by object later.
-    }
-    this._offset = this._offset + vertexCount;
+    // Create a view for each attribute we have
+    Object.keys(this.attributes).forEach( (key) => {
+      copyToBufferWindow(key);
+    });
 
     return newGeometry;
   }
@@ -92,7 +117,8 @@ class BufferGeometryHeap extends BufferGeometry {
   }
 
   grow(capacity) {
-    debug(`buffer-geometry-heap: grow(${capacity})`);
+    debug(`buffer-geometry-heap: ${this.name}.grow(${capacity})`);
+    console.log(`buffer-geometry-heap: ${this.name}.grow(${capacity})`);
     // We need to make sure we always grow this thing, not shrink it...
     if (this._capacity >= capacity) {
       throw new Error(`capacity (${capacity}) must be greater than it is now (${this.capacity}).`);
@@ -116,6 +142,30 @@ class BufferGeometryHeap extends BufferGeometry {
     growAttribute('uv');
   }
 
+  getBuffer(obj) {
+    const entry = this._objList.get(obj);
+    if (!entry) {
+      throw new Error(`entry does not exist for object ${obj}`);
+    }
+    return entry.geometry;
+  }
+
+  remove(obj) {
+    const entry = this._objList.get(obj);
+    if (!entry) {
+      throw new Error(`entry does not exist for object ${obj}`);
+    }
+    //const geometry = entry.geometry;
+
+    Object.keys(this.attributes).forEach( (key) => {
+      const itemSize = this.attributes[key].itemSize;
+      const start = entry.offset * itemSize;
+      const stop = start + (entry.count * itemSize);
+      this.attributes[key].array.fill(0, start, stop);
+      this.attributes[key].needsUpdate = true; // Let the containing buffer know we need to refresh
+    });
+
+  }
 }
 
 export default BufferGeometryHeap;

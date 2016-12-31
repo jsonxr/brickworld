@@ -1,4 +1,4 @@
-import { MeshStandardMaterial, VertexColors } from 'three';
+import { MeshStandardMaterial, MeshPhysicalMaterial, VertexColors } from 'three';
 
 
 // The loading of textures does not work on the server...
@@ -24,12 +24,15 @@ import { MeshStandardMaterial, VertexColors } from 'three';
 
 class BrickMaterial extends MeshStandardMaterial {
   constructor(options = {}) {
-    //options.wireframe = options.wireframe !== undefined ? options.wireframe : false;
+    options.wireframe = (options.wireframe !== undefined) ? options.wireframe: false;
     options.vertexColors = options.vertexColors || VertexColors;
     options.refractionRatio = options.refractionRatio || 0.98;
-    options.roughness = options.roughness || 0.4;
-    options.metalness = options.metalness || 0.2;
-    options.wireframe = (options.wireframe !== undefined) ? options.wireframe: true;
+    options.roughness = options.roughness || 0.5;
+    options.metalness = options.metalness || 0;
+    // These are for MeshPhysicalMaterial
+    options.clearCoat = options.clearCoat || 0.5;
+    options.clearCoatRoughness = options.clearCoatRoughness || 0.5;
+    options.reflectivity = options.reflectivity || 0.5;
     //options.map = map;
     super(options);
 

@@ -186,14 +186,14 @@ class Engine {
 
     // FPS stats
     this.stats = new Stats();
-    this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
     this._ui.appendChild(this.stats.dom);
 
     // Grid
     const size = 16 * 20; // 20LDU units x 16 studs
     const step = 32;
     this.gridHelper = new THREE.GridHelper(size, step);
-    this.scene.add(this.gridHelper);
+    //this.scene.add(this.gridHelper);
 
     // FirstPerson Perspective
     //this.controls = new FirstPersonControl(this._camera);
@@ -204,7 +204,7 @@ class Engine {
     this._highlight = new Highlight(this._camera);
     this._highlight.enabled = false;
     this._highlight.name = '_highlight';
-    //this.scene.add(this._highlight);
+    this.scene.add(this._highlight);
   }
 
   drawScene() {
@@ -218,10 +218,7 @@ class Engine {
     const time = window.performance.now();
     const delta = (time - this._prevTime) / 1000;
 
-
     this.controls.update(delta);
-
-
     this.crosshair.update(delta, frameno);
     this._highlight.update(delta, frameno);
     this._prevTime = time;

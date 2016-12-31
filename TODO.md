@@ -14,6 +14,10 @@
     }
     ```
 
+* <b>Octree</b>
+
+  Improve selection process each frame. Currently about 4ms with selection and drawing.  0-1ms with selection turned off. Need to improve the speed.
+
 * <b>UI</b> - Choose Brick
 
   Need a way to choose a brick besides middle click existing brick.
@@ -69,6 +73,8 @@
 * <b>Indexed Vertices</b> - Can we use these?
 
 * <b>Instanced Rendering</b> - Can we render studs this way?
+
+* <b>LDraw Colors</b> - Import all LDraw colors that are modern
 
 # Ideas
 
