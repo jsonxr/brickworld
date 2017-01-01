@@ -6,8 +6,12 @@ import Materials from '../../shared/materials';
 import Storage from '../ge/storage';
 import jsonKate from './chunk-kate';
 import json1 from './chunk-1';
+import json1x1 from './1x1';
+import json2x4 from './2x4';
 import json2 from './chunk-2';
 import colors from '../../shared/colors';
+import Stud from '../../shared/stud';
+
 
 import { Object3D,AmbientLight, DirectionalLight, DirectionalLightHelper, Mesh, MeshStandardMaterial, PointLight } from 'three';
 
@@ -85,6 +89,7 @@ class MyGame extends Engine {
     o1.position.y = this.chunk.position[1];
     o1.position.z = this.chunk.position[2];
     o1.add(new Mesh(this.chunk.buffers.geometry, this.brickMaterial));
+    this.chunk.object = o1;
     this.scene.add(o1);
     //
     // const chunk1 = Chunk.createFromJSON(json1);
@@ -126,12 +131,17 @@ class MyGame extends Engine {
     const load = (args) => {
       return this.storage.load(args[1])
         .then((myjson) => {
-          this.scene.remove(this.chunk.studMesh); // Remove old chunk
-          this.scene.remove(this.chunk.brickMesh); // Remove old chunk
+          this.scene.remove(this.chunk.object);
 
-          this.chunk = this.createChunk(myjson);
-          this.scene.add(this.chunk.studMesh);
-          this.scene.add(this.chunk.brickMesh);
+          this.chunk = Chunk.createFromJSON(myjson);
+          this.chunk.createLod(0);
+          const o1 = new Object3D();
+          o1.position.x = this.chunk.position[0];
+          o1.position.y = this.chunk.position[1];
+          o1.position.z = this.chunk.position[2];
+          o1.add(new Mesh(this.chunk.buffers.geometry, this.brickMaterial));
+          this.chunk.object = o1;
+          this.scene.add(o1);
           this.highlight.selectables = this.chunk.buffers.selectables;
         });
     };
@@ -170,22 +180,22 @@ class MyGame extends Engine {
 
     //console.log(`this.isFullscreen: ${this.isFullscreen} highlight: ${this.highlight.visible}`);
     if (this.isFullscreen && this.highlight.visible) {
-      const brick = this.highlight.selected;
+      const selected = this.highlight.selected;
       const now = performance.now();
       if (this.controls.mouseLeft) {
-        if (brick && now - this.lastMouseLeft > 200 && this.chunk.plate !== brick) {
+        if (selected && now - this.lastMouseLeft > 200 && this.chunk.plate !== selected) {
           this.lastMouseLeft = now;
           console.log('highlight-left', this.highlight.selected);
-          this.chunk.remove(brick.brick);
+          this.chunk.remove(selected.brick);
         }
       } else {
         this.lastMouseLeft = 0;
       }
 
       if (this.controls.mouseMiddle) {
-        if (brick && (now - this.lastMouseMiddle > 200)) {
+        if (selected && (now - this.lastMouseMiddle > 200)) {
           this.lastMouseMiddle = now;
-          this.savedBrick = brick.brick;
+          this.savedBrick = selected.brick;
           console.log('savedbrick: ', this.savedBrick);
         }
       } else {
@@ -193,43 +203,46 @@ class MyGame extends Engine {
       }
 
       if (this.controls.mouseRight) {
-        if (brick &&  (now - this.lastMouseRight > 200)) {
+        if (selected &&  (now - this.lastMouseRight > 200)) {
           this.lastMouseRight = now;
 
           //this.chunk.add()
-          if (brick !== brick.brick) {
+
+          const normalArray = this.chunk.buffers.selectables.attributes.normal.array;
+          const x = normalArray[this.highlight.faceIndex * 3];
+          const y = normalArray[this.highlight.faceIndex * 3 + 1];
+          const z = normalArray[this.highlight.faceIndex * 3 + 2];
+
+          let position = null;
+          if (selected.parent instanceof Brick) {
+            const stud = selected;
+            const brick = selected.brick;
+            console.log('clicked on stud!', stud);
             // It's a stud
-            const position = brick.position;
-            const orientation = brick.orientation;
+            position = [
+              stud.position[0] + brick.position[0],
+              stud.position[1] + brick.position[1],
+              stud.position[2] + brick.position[2]
+            ];
+            console.log(`brick: ${brick.id} ${brick.position}`);
+            console.log(`stud: ${stud.id} ${stud.position}`);
+            console.log(position);
           } else {
-            const normalArray = this.chunk.buffers.selectables.attributes.normal.array;
-            console.log(this.chunk.buffers.selectables);
-
-            const x = normalArray[this.highlight.faceIndex * 3];
-            const y = normalArray[this.highlight.faceIndex * 3 + 1];
-            const z = normalArray[this.highlight.faceIndex * 3 + 2];
-            console.log(`x=${x},y=${y},z=${z}`);
-            const color = this.savedBrick ? this.savedBrick.color : colors.getById('21');
-            console.log(this.savedBrick);
-
-            const position = [
+            const brick = selected.brick;
+            position = [
               brick.position[0] + (x * BRICK_WIDTH),
               brick.position[1] + (y * BRICK_HEIGHT * 3),
               brick.position[2] + (z * BRICK_WIDTH)
             ];
-            console.log('brick.position', brick.position);
-            console.log('position', position);
-            const newBrick = Brick.createFromPart(this.savedBrick.part, {
-              position: position,
-              color: color.id
-            });
-            newBrick.name = `(${newBrick.position})`;
-            this.chunk.add(newBrick);
-            console.log('chunk-geo-after', this.chunk.buffers.geometry);
-            console.log('Added new brick: ', newBrick);
           }
 
-          //this.chunk.remove(this.chunk.selectedBrick);
+          const color = this.savedBrick ? this.savedBrick.color : colors.getById('21');
+          const newBrick = Brick.createFromPart(this.savedBrick.part, {
+            position: position,
+            color: color.id
+          });
+          newBrick.name = `(${newBrick.position})`;
+          this.chunk.add(newBrick);
         }
       } else {
         this.lastMouseRight = 0;

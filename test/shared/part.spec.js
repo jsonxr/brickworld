@@ -4,38 +4,36 @@ import Part from '../../src/shared/part';
 
 describe('shared/part', () => {
 
-  describe('#constructor(id, type, name, width, depth, height)', () => {
+  describe('#constructor(options)', () => {
     it('should create part', () => {
-      const part = new Part('1', 'brick', 'Brick 1x1', 1, 2, 3);
+      const part = new Part({ id: '1', type: 'brick', name: 'Brick 1x1' });
       assert(part);
       assert.equal(part.id, '1');
       assert.equal(part.type, 'brick');
       assert.equal(part.name, 'Brick 1x1');
-      assert.equal(part.width, 1);
-      assert.equal(part.depth, 2);
-      assert.equal(part.height, 3);
     });
   });
 
-  describe('#createGeometry', () => {
-    it('should create geometry for position', () => {
-      const part = new Part('1', 'plate', 'Plate 1x1', 1, 1, 1);
-      const geometry = part.createGeometry('#ffffff');
-      assert(geometry, 'Could not get geometry');
-      assert(geometry.attributes.position);
+  describe('#pushGeometryLod(level)', () => {
+    it('should push geometry', () => {
+      const part = new Part({ id: '1', type: 'brick', name: 'Brick 1x1' });
+      part.pushGeometryLod('zero');
+      part.pushGeometryLod('one');
+      assert.equal(part.getGeometryByLod(0), 'zero');
+      assert.equal(part.getGeometryByLod(1), 'one');
+      assert.equal(part.getGeometryByLod(2), 'one');
+
     });
-    it('should create geometry with proper color', () => {
-      const part = new Part('1', 'plate', 'Plate 1x1', 1, 1, 1);
-      const geometry = part.createGeometry('#ff00ff');
-      assert(geometry, 'Could not get geometry');
-      assert.equal(geometry.attributes.color.count, geometry.attributes.position.count);
-      assert.equal(geometry.attributes.color.itemSize, geometry.attributes.position.itemSize);
-      const array = geometry.attributes.color.array;
-      for (let i = 0; i < array.length; i+=3) {
-        assert.equal(array[i], 1);
-        assert.equal(array[i + 1], 0);
-        assert.equal(array[i + 2], 1);
-      }
+  });
+
+  describe('#getGeometryByLod(level)', () => {
+    it('should get geometry based on the level of detail', () => {
+      const part = new Part({ id: '1', type: 'brick', name: 'Brick 1x1' });
+      part.pushGeometryLod('zero');
+      part.pushGeometryLod('one');
+      assert.equal(part.getGeometryByLod(0), 'zero');
+      assert.equal(part.getGeometryByLod(1), 'one');
+      assert.equal(part.getGeometryByLod(2), 'one');
 
     });
   });

@@ -12,6 +12,7 @@ import {
 } from 'three';
 import { OUTLINE_SCALE } from '../../shared/brick-geometry';
 import { threeColors } from '../../shared/colors';
+import Brick from '../../shared/brick';
 
 
 // var lineSegments = new THREE.LineSegments(
@@ -65,7 +66,10 @@ class Highlight extends LineSegments {
     this._outline.addAttribute('position', new Float32BufferAttribute(OUTLINE_GEOMETRY_SIZE,3));
     this._outline.addAttribute('normal', new Float32BufferAttribute(OUTLINE_GEOMETRY_SIZE,3));
     this._outline.addAttribute('color', new Float32BufferAttribute(OUTLINE_GEOMETRY_SIZE,3));
-
+    this._stud = new BufferGeometry();
+    this._stud.addAttribute('position', new Float32BufferAttribute(36 * 3,3));
+    this._stud.addAttribute('normal', new Float32BufferAttribute(36 * 3,3));
+    this._stud.addAttribute('color', new Float32BufferAttribute(36 * 3,3));
     // Track where we are pointing...
     // This is 0,0 in fullscreen mode and never changes
     this._mouse = new Vector2(0, 0);
@@ -219,11 +223,40 @@ class Highlight extends LineSegments {
     // applyToGeometry(outline, this._brick.position, null, this._brick.orientation); // Parent's
     // outline.merge(this._brick.geometry, GEOMETRY_STUD_BOX.attributes.position.count);
     //this._outline = new EdgesGeometry(node.value.outline);
-    this._outline.attributes.position.array.set(node.value.outline.attributes.position.array);
-    this._outline.attributes.normal.array.set(node.value.outline.attributes.normal.array);
+    let stud = null;
+    let brick = null;
+    if (node.value instanceof Brick) {
+      brick = node.value;
+    } else {
+      stud = node.value;
+      brick = stud.brick;
+    }
 
+
+    this._outline.merge(brick.outline);
     this._outline.scale(OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_SCALE);
-    this._outline.applyMatrix(node.value.matrix);
+    this._outline.applyMatrix(brick.matrix);
+    // this._brick.attributes.position.array.set(brick.outline.attributes.position.array);
+    // this._brick.attributes.normal.array.set(brick.outline.attributes.normal.array);
+    if (stud) {
+      // this._stud.attributes.position.array.set(stud.outline.attributes.position.array);
+      // this._stud.attributes.normal.array.set(stud.outline.attributes.normal.array);
+      this._stud.merge(stud.outline);
+      this._stud.scale(OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_SCALE);
+      this._stud.applyMatrix(stud.matrix);
+      this._outline.merge(this._stud, 36);
+    } else {
+      this._outline.attributes.position.array.fill(0, 36*3);
+    }
+
+
+    //
+    // this._brick.attributes.position.array.set(brick.outline.attributes.position.array);
+    // this._brick.attributes.normal.array.set(brick.outline.attributes.normal.array);
+    // this._brick.scale(OUTLINE_SCALE, OUTLINE_SCALE, OUTLINE_SCALE);
+    // this._brick.applyMatrix(brick.matrix);
+    //
+    // this._outline.merge(this._stud)
 
     const outline = new EdgesGeometry(this._outline);
 

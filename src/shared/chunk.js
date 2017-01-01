@@ -105,8 +105,8 @@ class Chunk {
     this._bricks.delete(brick.id);
     // Remove each stud
     brick.forEachStud((stud) => {
-      // this._geometry.remove(stud);
-      // this._selectable.remove(stud);
+      this.buffers.geometry.remove(stud);
+      this.buffers.selectables.remove(stud);
     });
     // Remove the brick
     this.buffers.geometry.remove(brick);
@@ -116,11 +116,11 @@ class Chunk {
 
   toJSON() {
     const bricksJson = [];
-    for (const brick of this._bricks) {
+    this.forEachBrick((brick) => {
       if (brick !== null) {
         bricksJson.push(brick.toJSON());
       }
-    }
+    });
     return {
       id: this.id,
       version: 1,

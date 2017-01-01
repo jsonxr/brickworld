@@ -1,16 +1,15 @@
-// import { getStudGeometryArrayForBrick, getStudPositionsForBrick, getBrickGeometry } from './brick-geometry';
-// import { BufferAttribute, Color } from 'three';
-// import Studs from './studs';
+import assert from './assert';
+import Object3D from './object-3d';
 
 
-class Part {
+class PartTemplate extends Object3D {
   constructor(options) {
-    this._id = options.id;
+    super(options);
     this._type = options.type;
     this._name = options.name;
-    this._geometry = []; // Cache geometry for part
-    this._studs = null;
     this._outline = null;
+    this._selectable = null;
+    this._geometry = null;
   }
 
   get id() {
@@ -33,27 +32,6 @@ class Part {
     this._name = value;
   }
 
-  get outline() {
-    return this._outline;
-  }
-  set outline(value) {
-    if (this._outline) {
-      throw new Error('outline has already been set.');
-    }
-    this._outline = value;
-  }
-
-  get studs() {
-    return this._studs;
-  }
-  set studs(values) {
-    if (this._studs) {
-      console.log(this);
-      throw new Error('studs have already been set.');
-    }
-    this._studs = values;
-  }
-
   get type() {
     return this._type;
   }
@@ -64,16 +42,48 @@ class Part {
     this._type = value;
   }
 
+  get outline() {
+    return this._outline;
+  }
+  set outline(value) {
+    if (this._outline) {
+      throw new Error('outline has already been set.');
+    }
+    this._outline = value;
+  }
+
+  get selectable() {
+    return this._selectable;
+  }
+  set selectable(value) {
+    if (this._selectable) {
+      throw new Error('selectable has already been set.');
+    }
+    this._selectable = value;
+  }
+
+  get geometry() {
+    return this._geometry;
+  }
+  set geometry(value) {
+    assert( () => {
+      assert.isOk(value);
+      assert.isArray(value);
+    });
+    if (this._geometry) {
+      throw new Error('geometry has already been set')
+    }
+    this._geometry = value;
+  }
   /**
    * Pushes a geometry to the part. Push in order of most detailed to least detailed
    * @param geometry
    */
   pushGeometryLod(geometry) {
+    if (!this._geometry) {
+      this._geometry = [];
+    }
     this._geometry.push(geometry);
-  }
-
-  forEachStud(fn) {
-    this._studs.forEach(fn);
   }
 
   /**
@@ -88,28 +98,6 @@ class Part {
     }
     return this._geometry[level];
   }
-
-  toJSON() {
-    const getArray = (name) => {
-      const array = [];
-      for (const value of this.geometry.attributes[name].array) {
-        array.push(value);
-      }
-      return array;
-    };
-
-    const json = {
-      id: this._id,
-      name: this._name,
-      type: this._type,
-      positions: getArray('position'),
-      normals: getArray('normal'),
-      uvs: getArray('uv')
-    };
-
-    return json;
-  }
-
 }
 
-export default Part;
+export default PartTemplate;

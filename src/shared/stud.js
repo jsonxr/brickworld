@@ -1,48 +1,59 @@
-import { EdgesGeometry } from 'three';
+import Object3D from './object-3d';
 import { applyToGeometry, OUTLINE_SCALE, GEOMETRY_STUD, GEOMETRY_STUD_BOX, GEOMETRY_STUD_SELECT_BOX } from './brick-geometry';
+import assert from './assert';
 
-
-class Stud {
-  constructor(brick, options = {}) {
-    this._brick = brick;
-    this._position = options.position ? Object.freeze(options.position) : null;
-    this._orientation = options.orientation ? Object.freeze(options.orientation) : null;
-    this._geometry = null;
-    this._selectables = null;
-    this._outline = null;
+class Stud extends Object3D {
+  constructor(options = {}) {
+    super(options);
+    this._part = null;
   }
 
-  copyTo(dest) {
-    dest._position = this._position;
-    dest._orientation = this._orientation;
+  static createFromStudPart(studPart, options = {}) {
+    assert( () => {
+      assert.isOk(studPart);
+      assert.isOk(options.parent);
+      assert.isOk(studPart.position); // Must always have a position
+      assert.isArray(studPart.position);
+    });
+    options.position = studPart.position;
+    options.orientation = studPart.orientation;
+    const stud = new Stud(options);
+    stud._part = studPart;
+    return stud;
   }
 
   //------------------------------------
   // Properties
   //------------------------------------
 
+  get part() {
+    return this._part;
+  }
+  set part(value) {
+    if (this._part) {
+      throw new Error('part has already been set');
+    }
+    this._part = value;
+  }
+
   get brick() {
-    return this._brick;
+    return this.parent;
   }
 
   get chunk() {
-    return this._brick.chunk;
+    return (this.parent)
+      ? this.parent.chunk
+      : null;
   }
 
-  get geometry() {
-    return this._geometry;
-  }
-
-  get orientation() {
-    return this._orientation;
+  get color() {
+    return (this.parent)
+      ? this.parent.color
+      : null;
   }
 
   get outline() {
-    return GEOMETRY_STUD_BOX;
-  }
-
-  get position() {
-    return this._position;
+    return this.part.outline;
   }
 
   //------------------------------------
@@ -50,40 +61,19 @@ class Stud {
   //------------------------------------
 
   createLod(level) {
-    if (this._geometry) { this._geometry.dispose(); }
-    if (this._selectables) { this._selectables.dispose(); }
-    if (this._outline) { this._outline.dispose(); }
-
-    this._geometry = this.chunk.geometry.newFromGeometry(GEOMETRY_STUD, this);
-    applyToGeometry(this._geometry, this._position, null, this._orientation); // ours
-    applyToGeometry(this._geometry, this._brick.position, this._brick.color, this._brick.orientation); // Parent's
-
-    this._selectables = this.chunk.selectable.newFromGeometry(GEOMETRY_STUD_SELECT_BOX, this);
-    applyToGeometry(this._selectables, this._position, null, this._orientation); // ours
-    applyToGeometry(this._selectables, this._brick.position, null, this._brick.orientation); // Parent's
+    const geometry = this.chunk.buffers.geometry.newFromGeometry(this.part.getGeometryByLod(level), this);
 
 
-    // const outline = this.chunk.outline.newBuffer(vertexCount, this);
-    // outline.merge(GEOMETRY_STUD_BOX, 0);
-    // outline.scale(OUTLINE_SCALE,OUTLINE_SCALE,OUTLINE_SCALE); // Scale the geometry first
-    // applyToGeometry(outline, this._position, null, this._orientation); // ours
-    // applyToGeometry(outline, this._brick.position, null, this._brick.orientation); // Parent's
-    // outline.merge(this._brick.geometry, GEOMETRY_STUD_BOX.attributes.position.count);
-    // this._outline = new EdgesGeometry(outline);
+    //const geometry = this.chunk.buffers.geometry.newFromGeometry(GEOMETRY_STUD, this);
+    //geometry.applyMatrix(this.matrix);
+    applyToGeometry(geometry, this.position, null, this.orientation); // ours
+    //applyToGeometry(geometry, null, this._brick.color, null); // Parent's
+    applyToGeometry(geometry, this.parent.position, this.parent.color, this.parent.orientation); // Parent's
 
-  }
-  //
-  // createSelectable(highlight) {
-  //   const entry = highlight.addSelectable(this, GEOMETRY_STUD_SELECT_BOX, GEOMETRY_STUD_BOX);
-  //   applyToGeometry(entry.selectable, this._position, null, this._orientation);
-  //   applyToGeometry(entry.outline, this._position, null, this._orientation);
-  //   return entry;
-  // }
-
-  dispose() {
-    if (this._geometry) { this._geometry.dispose(); this._geometry = null; }
-    if (this._selectables) { this._selectables.dispose(); this._selectables = null; }
-    if (this._outline) { this._outline.dispose(); this._outline = null; }
+    const selectables = this.chunk.buffers.selectables.newFromGeometry(GEOMETRY_STUD_SELECT_BOX, this);
+    selectables.applyMatrix(this.matrix);
+    //applyToGeometry(selectables, this._position, null, this._orientation); // ours
+    //applyToGeometry(selectables, this._brick.position, null, this._brick.orientation); // Parent's
   }
 
 }

@@ -69,7 +69,7 @@ function fillArrayWithColor(array, color) {
   if (array.length % 3 > 0) {
     throw new Error('Array must be in multiples of 3')
   }
-  const rgb = new Color(color.value);
+  const rgb = (typeof color === 'string') ? new Color(color) : new Color(color.value);
   for (let i = 0; i < array.length; i += 3) {
     array[i] = rgb.r;
     array[i + 1] = rgb.g;
@@ -177,7 +177,7 @@ function getStudPositionsForBrickPart(width, depth, height) {
 }
 
 export {
-  GEOMETRY_STUD_BOX as GEOMETRY_STUD,
+  GEOMETRY_STUD,
   GEOMETRY_STUD_BOX,
   GEOMETRY_STUD_SELECT_BOX,
   BRICK_HEIGHT,

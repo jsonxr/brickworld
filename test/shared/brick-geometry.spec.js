@@ -75,7 +75,17 @@ describe('shared/brick-geometry', () => {
         fillArrayWithColor(array, '#ff00ff');
       });
     });
-    it('should fill an array with a color', () => {
+    it('should fill an array with color=\'#ff00ff\'', () => {
+      const array = new Float32Array(6);
+      fillArrayWithColor(array, { value: '#ff00ff' });
+      assert.equal(array[0], 1);
+      assert.equal(array[1], 0);
+      assert.equal(array[2], 1);
+      assert.equal(array[3], 1);
+      assert.equal(array[4], 0);
+      assert.equal(array[5], 1);
+    });
+    it('should fill an array with color={ value: \'#ff00ff\' }', () => {
       const array = new Float32Array(6);
       fillArrayWithColor(array, '#ff00ff');
       assert.equal(array[0], 1);
