@@ -8,6 +8,7 @@
     "node": true
   },
   "globals": {
+    "Uint8Array": true,
     "ArrayBuffer": true,
     "Float32Array": true,
     "Map": true,

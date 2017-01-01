@@ -1,4 +1,8 @@
+import createDebug from './debug';
 import uuid from './uuid';
+
+
+const debug = createDebug('utils');
 
 function generateId() {
   return uuid.v4slug();
@@ -19,13 +23,13 @@ function setOptions(obj, options, ignore = []) {
     }
     const newValue = options[key];
     if (newValue === undefined) {
-      console.warn(`Brick: '${key}' parameter is undefined.`);
+      debug(`Brick: '${key}' parameter is undefined.`);
       continue;
     }
     // Check that it exists on this object
     const currentValue = obj[key];
     if (currentValue === undefined) {
-      console.warn(`Brick: '${key}' is not a property.`);
+      debug(`Brick: '${key}' is not a property.`);
       continue;
     }
     obj[key] = newValue;

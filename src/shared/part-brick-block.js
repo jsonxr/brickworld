@@ -7,7 +7,6 @@ import {
   getGeometryForBrickPart,
   getStudPositionsForBrickPart
 } from './brick-geometry';
-import { BufferGeometry, Float32BufferAttribute } from 'three';
 
 
 /**

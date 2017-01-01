@@ -56,18 +56,18 @@ function v4(options, buf, offset) {
   return buf || bytesToUuid(rnds);
 }
 
-const TheBuffer = (global.window)
-  ? global.Uint8Array // Browser
-  : global.Buffer;    // Node
+const TheBuffer = (window)
+  ? Uint8Array // Browser
+  : Buffer;    // Node
 
 function bufferToBase64( buffer ) {
-  if (global.window) {                                  // Browser
+  if (typeof(window) !== 'undefined') {                                  // Browser
     let binary = '';
     const len = buffer.byteLength;
     for (let i = 0; i < len; i++) {
       binary += String.fromCharCode(buffer[ i ]);
     }
-    return global.window.btoa( binary );
+    return window.btoa( binary );
   } else {                                              // Node
     return buffer.toString('base64');
   }

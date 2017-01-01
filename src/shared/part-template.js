@@ -71,7 +71,7 @@ class PartTemplate extends Object3D {
       assert.isArray(value);
     });
     if (this._geometry) {
-      throw new Error('geometry has already been set')
+      throw new Error('geometry has already been set');
     }
     this._geometry = value;
   }

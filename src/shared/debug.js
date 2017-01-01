@@ -1,17 +1,18 @@
 function ignore() {}
 
+const debug = console;
 
 function namespace(ns) {
   let DEBUG;
-  if (global.process && global.process.env) {
-    DEBUG = global.process.env.DEBUG;
+  if (typeof(window) !== 'undefined') {                                  // Browser
+    DEBUG = window.DEBUG;
   } else {
-    DEBUG = global.DEBUG;
+    DEBUG = process.env.DEBUG;
   }
 
   if (!DEBUG) return ignore;
   if (DEBUG.split(' ').indexOf(ns) < 0) return ignore;
-  return console.log;
+  return debug.log;
 }
 
 export default namespace;

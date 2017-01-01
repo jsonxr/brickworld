@@ -67,7 +67,7 @@ const GEOMETRY_STUD = (function getStudGeometry() {
 
 function fillArrayWithColor(array, color) {
   if (array.length % 3 > 0) {
-    throw new Error('Array must be in multiples of 3')
+    throw new Error('Array must be in multiples of 3');
   }
   const rgb = (typeof color === 'string') ? new Color(color) : new Color(color.value);
   for (let i = 0; i < array.length; i += 3) {
@@ -145,7 +145,7 @@ function getBoxGeometryForBrickPart(width, depth, height) {
 
 function getStudGeometryForBrick(width, depth, height, studTemplate) {
   studTemplate = studTemplate || GEOMETRY_STUD;
-  const positions = getStudPositionsForBrickPart(width, depth, height)
+  const positions = getStudPositionsForBrickPart(width, depth, height);
   // Set default parameters
   const heap = new BufferGeometryHeap(positions.length * studTemplate.attributes.position.count);
   for (const position of positions) {

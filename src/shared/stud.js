@@ -1,5 +1,5 @@
 import Object3D from './object-3d';
-import { applyToGeometry, OUTLINE_SCALE, GEOMETRY_STUD, GEOMETRY_STUD_BOX, GEOMETRY_STUD_SELECT_BOX } from './brick-geometry';
+import { applyToGeometry, GEOMETRY_STUD_SELECT_BOX } from './brick-geometry';
 import assert from './assert';
 
 class Stud extends Object3D {

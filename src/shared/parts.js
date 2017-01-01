@@ -12,11 +12,11 @@ const json = [
   { id: '6111' , type:'brick', name: 'Brick 1x10',  width: 1,  depth: 10, height: 3  },
   { id: '6112' , type:'brick', name: 'Brick 1x12',  width: 1,  depth: 12, height: 3  },
   { id: '2465' , type:'brick', name: 'Brick 1x16',  width: 1,  depth: 16, height: 3  },
-  { id: '3003' , type:'brick', name: 'Brick 2x2',   width: 2,  depth: 2,  height: 3  },
-  { id: '3002' , type:'brick', name: 'Brick 2x3',   width: 2,  depth: 3,  height: 3  },
-  { id: '3001' , type:'brick', name: 'Brick 2x4',   width: 2,  depth: 4,  height: 3  },
-  { id: '2456' , type:'brick', name: 'Brick 2x6',   width: 2,  depth: 6,  height: 3  },
-  { id: '3007' , type:'brick', name: 'Brick 2x8',   width: 2,  depth: 8,  height: 3  },
+  { id: '3003' , type:'brick', name: 'Brick 2x2',   width: 2,  depth: 2,  height: 3  },
+  { id: '3002' , type:'brick', name: 'Brick 2x3',   width: 2,  depth: 3,  height: 3  },
+  { id: '3001' , type:'brick', name: 'Brick 2x4',   width: 2,  depth: 4,  height: 3  },
+  { id: '2456' , type:'brick', name: 'Brick 2x6',   width: 2,  depth: 6,  height: 3  },
+  { id: '3007' , type:'brick', name: 'Brick 2x8',   width: 2,  depth: 8,  height: 3  },
   { id: '3006' , type:'brick', name: 'Brick 2x10',  width: 2,  depth: 10, height: 3  },
   { id: '2356' , type:'brick', name: 'Brick 4x6',   width: 4,  depth: 6,  height: 3  },
   { id: '6212' , type:'brick', name: 'Brick 4x10',  width: 4,  depth: 10, height: 3  },
@@ -70,11 +70,12 @@ const json = [
   { id: '3811',  type:'baseplate', name: 'Baseplate 32x32', width: 32, depth: 32, height: 3/8 }
 ];
 
-
-// const json = [
+// const json2 = [
 //   // 1x bricks
 //   { id: '3005' , type:'brick', name: 'Brick 1x1',   width: 1,  depth: 1,  height: 3  },
+//   { id: '3005' , type:'brick', name: 'Brick 1x12',  width: 1,  depth: 1,  height: 3  },
 // ];
+
 
 class Parts {
   constructor() {

@@ -118,7 +118,6 @@ class BufferGeometryHeap extends BufferGeometry {
 
   grow(capacity) {
     debug(`buffer-geometry-heap: ${this.name}.grow(${capacity})`);
-    console.log(`buffer-geometry-heap: ${this.name}.grow(${capacity})`);
     // We need to make sure we always grow this thing, not shrink it...
     if (this._capacity >= capacity) {
       throw new Error(`capacity (${capacity}) must be greater than it is now (${this.capacity}).`);

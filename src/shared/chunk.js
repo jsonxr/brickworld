@@ -3,6 +3,7 @@ import { generateId } from './utils';
 import parts from './parts';
 import Brick from './brick';
 import BufferGeometryHeap from './buffer-geometry-heap';
+import { Sphere } from 'three';
 
 
 // Private
@@ -16,9 +17,12 @@ function computeBounds(chunk) {
     assert.isDefined(chunk._buffers.studs);
     assert.isDefined(chunk._buffers.selectables);
   });
-  chunk._buffers.geometry.computeBoundingSphere();
-  chunk._buffers.studs.computeBoundingSphere();
-  chunk._buffers.selectables.computeBoundingSphere();
+  chunk._buffers.geometry.boundingSphere = new Sphere(undefined, 20 * 32);
+  chunk._buffers.studs.boundingSphere = new Sphere(undefined, 20 * 32);
+  chunk._buffers.selectables.boundingSphere = new Sphere(undefined, 20 * 32);
+  // chunk._buffers.geometry.computeBoundingSphere();
+  // chunk._buffers.studs.computeBoundingSphere();
+  // chunk._buffers.selectables.computeBoundingSphere();
 }
 
 class Chunk {

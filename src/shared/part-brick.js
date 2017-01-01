@@ -11,7 +11,6 @@ class PartBrick extends PartTemplate {
   }
   set studs(values) {
     if (this._studs) {
-      console.log(this);
       throw new Error('studs have already been set.');
     }
     this._studs = values;

@@ -146,6 +146,10 @@ class MyGame extends Engine {
         });
     };
 
+    const select = (args) => {
+
+    }
+
     const reload = (args) => {
       this.chunk.createLod(0);
       this.scene.remove(this.highlight.mesh);

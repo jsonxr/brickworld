@@ -27,7 +27,6 @@ class Brick extends Object3D {
     const brick = new Brick(options);
     brick._part = part;
     brick._studs = [];
-    console.log(part);
     brick._part.forEachStud((partStud) => {
       const stud = Stud.createFromStudPart(partStud, { parent: brick });
       brick._studs.push(stud);

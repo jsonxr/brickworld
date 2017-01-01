@@ -10,8 +10,8 @@ describe('shared/debug', () => {
     });
     it('should create logger if global.DEBUG contains ns', () => {
       // set global
-      if (global.window) {
-        global.DEBUG = 'geometry-heap';
+      if (typeof(window) !== 'undefined') {                                  // Browser
+        window.DEBUG = 'geometry-heap';
       } else {
         process.env.DEBUG = 'geometry-heap';
       }
@@ -19,8 +19,8 @@ describe('shared/debug', () => {
       log('This log line should show.');
       assert(true);
       // unset global
-      if (global.window) {
-        delete global.DEBUG;
+      if (typeof(window) !== 'undefined') {                                  // Browser
+        delete window.DEBUG;
       } else {
         delete process.env.DEBUG;
       }
