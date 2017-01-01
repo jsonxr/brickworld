@@ -1,3 +1,5 @@
+'use strict';
+
 import { BufferAttribute, BufferGeometry } from 'three';
 import createDebug from './debug';
 import FaceList from './face-list';

@@ -1,3 +1,5 @@
+'use strict';
+
 import Dexie from 'dexie';
 
 class Storage {

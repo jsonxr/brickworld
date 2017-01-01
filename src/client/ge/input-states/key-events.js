@@ -1,3 +1,5 @@
+'use strict';
+
 const KeyEvents = {
   DOM_VK_CANCEL: 3,
   DOM_VK_HELP: 6,

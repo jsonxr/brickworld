@@ -1,3 +1,5 @@
+'use strict';
+
 import assert from './assert';
 import Object3D from './object-3d';
 

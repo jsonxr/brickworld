@@ -1,3 +1,5 @@
+'use strict';
+
 import PartBrick from './part-brick';
 import PartStud from './part-stud';
 import {

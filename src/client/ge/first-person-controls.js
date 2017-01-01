@@ -1,4 +1,4 @@
-
+'use strict';
 
 const HALF_PI = Math.PI / 2;
 const debug = console;

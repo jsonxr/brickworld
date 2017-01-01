@@ -1,3 +1,5 @@
+'use strict';
+
 // node: process.hrtime()
 // browser: performance.now()
 

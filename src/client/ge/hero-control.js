@@ -1,3 +1,5 @@
+'use strict';
+
 import { PointerLockControl } from './first-person-controls';
 import StandardState from './input-states/standard-state';
 import KeyEvents from './input-states/key-events';

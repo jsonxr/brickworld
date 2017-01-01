@@ -1,3 +1,5 @@
+'use strict';
+
 import KeyEvents from './key-events';
 import CommandState from './command-state';
 

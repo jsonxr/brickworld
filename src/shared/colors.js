@@ -1,3 +1,5 @@
+'use strict';
+
 import { Color } from 'three';
 
 const array =[

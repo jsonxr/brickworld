@@ -1,3 +1,5 @@
+'use strict';
+
 import Engine from '../ge/engine';
 import { BRICK_WIDTH, BRICK_HEIGHT } from '../../shared/brick-geometry';
 import Brick from '../../shared/brick';

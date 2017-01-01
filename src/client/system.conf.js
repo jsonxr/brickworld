@@ -1,3 +1,4 @@
+'use strict';
 
 // set our baseURL reference path
 System.config({

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @module client/ge
  */

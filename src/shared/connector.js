@@ -1,3 +1,5 @@
+'use strict';
+
 class Connector {
   constructor(options) {
     this.id = options.id || 'stud';

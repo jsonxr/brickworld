@@ -1,3 +1,5 @@
+'use strict';
+
 import Stud from './stud';
 import { applyToGeometry } from './brick-geometry';
 import colors from './colors';

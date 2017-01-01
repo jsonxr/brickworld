@@ -1,3 +1,5 @@
+'use strict';
+
 import {
   BufferGeometry,
   Float32BufferAttribute,

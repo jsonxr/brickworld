@@ -1,3 +1,5 @@
+'use strict';
+
 import Object3D from './object-3d';
 import { applyToGeometry, GEOMETRY_STUD_SELECT_BOX } from './brick-geometry';
 import assert from './assert';

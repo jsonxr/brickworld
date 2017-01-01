@@ -9,13 +9,12 @@ RUN \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && \
-    apt-get install -y nodejs && \
-    apt-get install -y yarn
+    apt-get install -y nodejs
 
 RUN npm install -g github:gulpjs/gulp#4.0
 
 ADD package.json yarn.lock /usr/src/app/
-RUN cd /usr/src/app && yarn
+RUN cd /usr/src/app && npm install
 
 ADD gulpfile.js /usr/src/app
 ADD src /usr/src/app/src

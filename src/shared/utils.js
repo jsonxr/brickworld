@@ -1,3 +1,5 @@
+'use strict';
+
 import createDebug from './debug';
 import uuid from './uuid';
 

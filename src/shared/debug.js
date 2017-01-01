@@ -1,3 +1,5 @@
+'use strict';
+
 function ignore() {}
 
 const debug = console;

@@ -1,3 +1,5 @@
+'use strict';
+
 import assert from './assert';
 import { generateId } from './utils';
 import { Matrix4 } from 'three';
