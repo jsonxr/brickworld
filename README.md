@@ -3,6 +3,11 @@ brickworld
 
 This is an attempt to make a world composed of building bricks, playable in a browser. Users can share their creations easily.  Users can share objects like furnature, vehicles, etc through instruction books. Users can share sections of their world that other users can then import into their own world.
 
+# Install (webstorm)
+npm i -g gulp-cli
+npm i -g babel
+npm i -g eslint
+
 
 Desired Features:
 

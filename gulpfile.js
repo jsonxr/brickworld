@@ -28,8 +28,14 @@ const LIBS_SRC = [
   // This is used for importing modules
   'node_modules/systemjs/dist/system.src.js',
   'node_modules/systemjs/dist/system.js.map',
-  'node_modules/traceur/bin/traceur.js',
-  'node_modules/traceur/bin/traceur.js.map',
+
+  'node_modules/react/dist/react.js',
+  'node_modules/react-dom/dist/react-dom.js',
+  // 'node_modules/react/dist/react.min.js',
+  // 'node_modules/react-dom/dist/react-dom.min.js',
+
+  // 'node_modules/traceur/bin/traceur.js',
+  // 'node_modules/traceur/bin/traceur.js.map',
 
   // Used for IndexedDB access
   'node_modules/dexie/dist/dexie.js',

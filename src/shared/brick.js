@@ -7,6 +7,7 @@ import Object3D from './object-3d';
 
 
 class Brick extends Object3D {
+
   /**
    *
    * @param options.part

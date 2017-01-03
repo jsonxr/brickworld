@@ -16,7 +16,7 @@ RUN npm install -g github:gulpjs/gulp#4.0
 ADD package.json yarn.lock /usr/src/app/
 RUN cd /usr/src/app && npm install
 
-ADD gulpfile.js /usr/src/app
+ADD .babelrc gulpfile.js .eslintrc.json karma.conf.js /usr/src/app/
 ADD src /usr/src/app/src
 
 RUN cd /usr/src/app && gulp build

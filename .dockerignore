@@ -1,5 +1,4 @@
 .DS_Store
-.eslintrc.json
 .git
 .gitignore
 .idea
@@ -10,5 +9,5 @@ coverage
 dist
 node_modules
 saved
-test
-karma.conf.js
+
+

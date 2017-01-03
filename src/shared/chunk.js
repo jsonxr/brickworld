@@ -38,7 +38,7 @@ class Chunk {
 
   static createFromJSON(json) {
     assert( () => {
-      assert.isDefined(json);
+      assert.isOk(json);
     });
     const chunk = new Chunk();
     chunk._position = json.position || [0,0,0];

@@ -133,6 +133,11 @@ class MyGame extends Engine {
     const load = (args) => {
       return this.storage.load(args[1])
         .then((myjson) => {
+          if (! myjson) {
+            console.log(`${args[1]} not found.`)
+            return;
+          }
+          console.log(`load ${args[1]}: `, myjson)
           this.scene.remove(this.chunk.object);
 
           this.chunk = Chunk.createFromJSON(myjson);
@@ -148,11 +153,7 @@ class MyGame extends Engine {
         });
     };
 
-    const select = (args) => {
-
-    }
-
-    const reload = (args) => {
+    const reload = () => {
       this.chunk.createLod(0);
       this.scene.remove(this.highlight.mesh);
       this.highlight.selectables = null;
@@ -185,7 +186,7 @@ class MyGame extends Engine {
     // object.material.uniforms.sineTime.value = Math.sin( object.material.uniforms.time.value * 0.05 );
 
     //console.log(`this.isFullscreen: ${this.isFullscreen} highlight: ${this.highlight.visible}`);
-    if (this.isFullscreen && this.highlight.visible) {
+    if (this.highlight.visible) {
       const selected = this.highlight.selected;
       const now = performance.now();
       if (this.controls.mouseLeft) {
@@ -277,6 +278,7 @@ function logFullscreenChange(event) {
   //console.log(event);
   window.game.isFullscreen = (element !== undefined);
 }
+
 document.addEventListener('webkitfullscreenchange', logFullscreenChange);
 document.addEventListener('msfullscreenchange', logFullscreenChange);
 document.addEventListener('mozfullscreenchange', logFullscreenChange);
@@ -294,9 +296,9 @@ document.addEventListener('pointerlockchange', (event) => {
 });
 
 window.game = new MyGame({
+  ui: document.getElementById('ui'),
   canvas: document.getElementById('canvas')
 });
 setTimeout(() => { // Ensure we can fail in a source map friendly place (not index.html)
-  window.game.setDomElement('ui');
   window.game.start();
 }, 0);

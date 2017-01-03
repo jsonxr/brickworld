@@ -16,9 +16,10 @@ System.config({
   },
   paths: {
     'three': 'libs/three.js',
-    'traceur': 'libs/traceur.js',
     'dexie': 'libs/dexie.js',
     'debug': 'libs/debug.js',
+    'react': 'libs/react.js',
+    'react-dom': 'libs/react-dom.js',
     'chai': 'libs/chai.js'
   },
 });

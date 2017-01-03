@@ -56,6 +56,11 @@ div#bottom {
   height: 480px;
 }
 
+#inventory {
+  visibility: hidden;
+  position: fixed;
+}
+
 canvas {
   margin:0;
   width:100%;

@@ -3,26 +3,13 @@
 /**
  * @module client/ge
  */
-
-import Profiler from './profiler';
-import HeroControl from './hero-control';
+import assert from '../../shared/assert';
+import HeroControl from './controls/hero-control';
 import Cursor3d from './cursor-3d';
 import Highlight from './highlight';
-import { PointLightHelper, PointLight } from 'three';
 
 
 const debug = console;
-
-function _fullscreenPolyfill(ui, fn) {
-  ui.requestFullscreen = ui.requestFullscreen ||
-                         ui.webkitRequestFullscreen || // Polyfill
-                         ui.msRequestFullscreen ||     // Polyfill
-                         ui.mozRequestFullScreen;      // Polyfill
-  // Polyfills for fullscreen api. When this is fully supported, these below are not necessary
-  document.addEventListener('webkitfullscreenchange', fn);
-  document.addEventListener('msfullscreenchange', fn);
-  document.addEventListener('mozfullscreenchange', fn);
-}
 
 /**
  * Handles working with the browser
@@ -33,51 +20,71 @@ class Engine {
    * @constructor
    */
   constructor(options) {
+    this._ui = options.ui;
+    this._canvas = options.canvas;
+
     this._isRunning = false;
-    this._ui = false;
     this._camera = null;
     this._renderer = null;
     this.scene = null;
-    this.profiler = new Profiler();
     this._prevTime = window.performance.now();
     this._highlight = null;
     this.frameno = 0;
-    this.focused = true;
-    this._canvas = options.canvas;
+    //this.focused = true;
 
     // This handles when user cmd-tab away from fullscreen
-    window.onfocus = () => {
-      this.focused = true;
-      //debug.log('window.onfocus');
-      this._fullscreenChange();
-    };
-    window.onblur = () => {
-      this.focused = false;
-      //debug.log('window.onblur');
-      this._fullscreenChange();
-    };
+    // window.onfocus = () => {
+    //   this.focused = true;
+    //   //debug.log('window.onfocus');
+    //   this._fullscreenChange();
+    // };
+    // window.onblur = () => {
+    //   this.focused = false;
+    //   //debug.log('window.onblur');
+    //   this._fullscreenChange();
+    // };
+
+    // if ('onpointerlockchange' in document) {
+    //   document.addEventListener('pointerlockchange', () => {
+    //     if (document.pointerLockElement) {
+    //       this.controls.clear();
+    //       this.controls.enabled = true;
+    //       this._highlight.enabled = true;
+    //     } else {
+    //       this.controls.enabled = false;
+    //       this._highlight.enabled = false;
+    //     }
+    //   });
+    // }
+    window.addEventListener('resize', this.doWindowResize.bind(this), false);
+
   }
+
+  get ui() {
+    return this._ui;
+  }
+
   //--------------------------------------------------------------------------
   // Windowing, Fullscreen, Pointerlock
   //--------------------------------------------------------------------------
 
-  _fullscreenChange() {
-    const element = document.fullscreenElement ||
-                    document.webkitFullscreenElement ||
-                    document.mozFullScreenElement ||
-                    document.msFullscreenElement;
-    this.onWindowResize();
-    if (this.focused && element) {
-      //document.body.className = 'focused';
-      element.requestPointerLock();
-      this.controls.enabled = true;
-      this._highlight.enabled = true;
-    } else {
-      //document.body.className = 'blurred';
-      this.controls.enabled = false;
-      this._highlight.enabled = false;
-    }
-  }
+  // _fullscreenChange() {
+  //   const element = document.fullscreenElement ||
+  //                   document.webkitFullscreenElement ||
+  //                   document.mozFullScreenElement ||
+  //                   document.msFullscreenElement;
+  //   this.onWindowResize();
+  //   if (this.focused && element) {
+  //     //document.body.className = 'focused';
+  //     element.requestPointerLock();
+  //     this.controls.enabled = true;
+  //     this._highlight.enabled = true;
+  //   } else {
+  //     //document.body.className = 'blurred';
+  //     this.controls.enabled = false;
+  //     this._highlight.enabled = false;
+  //   }
+  // }
 
   setDomElement(id) {
     this._ui = document.getElementById(id);
@@ -89,18 +96,23 @@ class Engine {
     window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
     // When user clicks the UI, go into fullscreen mode
-    this._ui.addEventListener('click', this.requestFullscreen.bind(this), false);
+//    this._ui.addEventListener('click', this.requestFullscreen.bind(this), false);
 
     // Polyfill for fullscreen api
-    document.addEventListener('fullscreenchange', this._fullscreenChange.bind(this));
-    _fullscreenPolyfill(this._ui, this._fullscreenChange.bind(this));
+    //document.addEventListener('fullscreenchange', this._fullscreenChange.bind(this));
+    //_fullscreenPolyfill(this._ui, this._fullscreenChange.bind(this));
+
+
   }
 
-  requestFullscreen() {
-    this._ui.requestFullscreen();
-  }
+  // requestFullscreen() {
+  //   // this._ui.requestFullscreen();
+  //   this._ui.requestPointerLock();
+  //   this.controls.enabled = true;
+  //   this._highlight.enabled = true;
+  // }
 
-  onWindowResize() {
+  doWindowResize() {
     if (this._ui && this._renderer && this._camera) {
       this.setSize();
     }
@@ -111,13 +123,13 @@ class Engine {
   //--------------------------------------------------------------------------
 
   setSize() {
-    //console.log(`${this._ui.offsetWidth}x${this._ui.offsetHeight}`);
+    console.log(`${this._ui.offsetWidth}x${this._ui.offsetHeight}`);
     // TODO: Respect the fullscreen aspect ratio...
-    // const width = this._ui.offsetWidth;
-    // const height = this._ui.offsetHeight;
+    //const width = this._ui.offsetWidth;
+    //const height = this._ui.offsetHeight;
     // this._renderer.setSize(width, height, false);
-    // this._camera.aspect = (width / height);
-    // this._camera.updateProjectionMatrix();
+    //this._camera.aspect = (width / height);
+    //this._camera.updateProjectionMatrix();
   }
 
   initScene(
