@@ -1,30 +1,38 @@
 <!DOCTYPE html>
-<html lang="en-us">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="app.css">
-</head>
-<body>
+<html lang="en">
+  <head>
+    <title>Brickworld</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
 
-<!-- Bootstrap traceur es6 -->
-<script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
-<script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
-<script>
-    traceur.options.experimental = true;
-</script>
-
-<canvas id="canvas">
-    You are using an <strong>outdated</strong> browser.
-    Please <a href="http://browsehappy.com/">upgrade your browser</a> to
-    improve your experience.</p>
-</canvas>
-
-<!-- My App -->
-<script type="module" src="./game.js"></script>
-
-</body>
+    <div id="inventory">
+      <a onclick="alert('hello 3001')">
+        <img src="http://img.bricklink.com/ItemImage/PN/1/3001.png">
+      </a>
+      <a onclick="alert('hello 3002')">
+        <img src="http://img.bricklink.com/ItemImage/PN/1/3002.png">
+      </a>
+      <a onclick="alert('hello 3003')">
+        <img src="http://img.bricklink.com/ItemImage/PN/1/3003.png">
+      </a>
+      <a onclick="alert('hello 3005')">
+        <img src="http://img.bricklink.com/ItemImage/PN/1/3005.png">
+      </a>
+    </div>
+    <div id="ui" height="100%">
+      <div>
+        <textarea id="commandhistory"></textarea>
+        <input id="command" type="text">
+      </div>
+      <canvas id="canvas" width="1280" height="720" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    <script>window.ASSERT = true;</script>
+    <div id="root"></div>
+  </body>
 </html>
-
-
-

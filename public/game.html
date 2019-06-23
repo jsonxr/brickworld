@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<body>
+
+<!-- Bootstrap traceur es6 -->
+<script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+<script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+<script>
+    traceur.options.experimental = true;
+</script>
+
+<canvas id="canvas">
+    You are using an <strong>outdated</strong> browser.
+    Please <a href="http://browsehappy.com/">upgrade your browser</a> to
+    improve your experience.</p>
+</canvas>
+
+<!-- My App -->
+<script type="module" src="./game.js"></script>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,12 @@
+{
+  "extends": "../.eslintrc.json",
+  "env": {
+    "mocha": true,
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "System": true,
+    "process": true
+  }
+}

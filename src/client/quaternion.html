@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - interactive - buffergeometry</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #cccccc;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #050505;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+
+				color: #0080ff;
+			}
+
+		</style>
+	</head>
+	<body>
+
+		<div id="container"></div>
+		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> webgl - interactive - buffergeometry</div>
+		<script src="libs/three.js"></script>
+		<script src="libs/Detector.js"></script>
+		<script src="libs/stats.min.js"></script>
+    <script src="libs/gl-matrix.js"></script>
+
+		<script>
+    
+    /*
+        LDRAW:
+        / a d g 0 \   / a b c x \
+        | b e h 0 |   | d e f y |
+        | c f i 0 |   | g h i z |
+        \ x y z 1 /   \ 0 0 0 1 /
+        WEBGL:
+    
+        THREE.js
+    row major...
+	  parseFloat(vals[5]), parseFloat(vals[6]), parseFloat(vals[7]), parseFloat(vals[2]),
+	  parseFloat(vals[8]), parseFloat(vals[9]), parseFloat(vals[10]), parseFloat(vals[3]),
+		parseFloat(vals[11]), parseFloat(vals[12]), parseFloat(vals[13]), parseFloat(vals[4]),
+		0.0, 0.0, 0.0, 1.0
+    
+    
+    column major...
+           a, b, c, x,
+           d, e, f, y,
+           g, h, i, z,
+           0, 0, 0, 1
+    */
+
+/*
+    //     x   y   z    a b c d e f g h i
+    // 1 2 140 -24 -120 1 0 0 0 1 0 0 0 1 3001.dat
+    m.fromArray([1, 0, 0, 140, 0, 1, 0, -24, 0, 0, 1, -120, 0, 0, 0, 1]);
+
+    //     x   y   z    a b c d e f g h i
+    // 1 4 140 -24 -120 0 0 1 0 1 0 -1 0 0 3001.dat
+    m.fromArray([0,0,1, 140, 0,1,0, -24, -1,0,0, -120, 0, 0, 0, 1]);
+    m.decompose( position, quaternion, scale );
+*/
+    // rotate 45
+    // x   y   z    a d g b e h c  f i
+    // 120 -24 -140 0 0 1 0 1 0 -1 0 0 3001.dat LDRAW
+    // 120 -24 -140     -1        THREE
+
+    function arrayFromLdraw(line) {
+      //     x   y   z    a b c d e f  g  h  i
+      // 0 1 2   3   4    5 6 7 8 9 10 11 12 13 14
+      // 1 4 140 -24 -120 0 0 1 0 1 0  -1  0 0  3001.dat
+      arr = line.split(' ');
+      return [
+        // a,d,g,0
+        arr[5],arr[8], arr[11], 0,
+        // b,e,h,0
+        arr[6],arr[9], arr[12], 0,
+        // c,f,i,0
+        arr[7],arr[10], arr[13], 0,
+        // x,y,z,1
+        arr[2],arr[3], arr[4], 1
+      ];
+    }
+    
+    var line = '1 2 140 -24 -120 1 0 0 0 1 0 0 0 1 3001.dat';
+    line = '1 5 120 -24 -140 0 0 1 0 1 0 -1 0 0 3001.dat';
+    var m = new THREE.Matrix4();
+    var position = new THREE.Vector3();
+    var quaternion = new THREE.Quaternion();
+    var scale = new THREE.Vector3();
+    m.fromArray(arrayFromLdraw(line));
+    m.decompose( position, quaternion, scale );
+    console.log('matrix: ', m.elements);
+    console.log('quaternion: ', quaternion);
+    console.log('position: ', position);
+    console.log('scale: ', scale);
+
+    var m2 = new THREE.Matrix4();
+    m2.setPosition(new THREE.Vector3( 120, -24, -140 ));
+    var r2 = new THREE.Matrix4();
+    r2.makeRotationFromEuler(new THREE.Euler( 0, 90 * Math.PI / 180, 0, 'XYZ' ))
+    m2 = m2.multiply(r2);
+    m2.decompose( position, quaternion, scale );
+    console.log('matrix: ', m2.elements);
+    console.log('quaternion: ', quaternion);
+    console.log('position: ', position);
+    console.log('scale: ', scale);
+
+    var mat = mat4.create();
+    var mypos = vec3.fromValues(120, -24, -140);
+    mat4.translate(mat, mat, mypos);
+    var rot = mat4.create();
+    mat4.fromRotation(rot, 90 * Math.PI / 180.0, vec3.fromValues(0,1,0));
+    console.log('rot: ', rot);
+    mat4.multiply(mat, mat, rot);
+    console.log(mat);
+
+// // mat4.identity(dest); mat4.translate(dest, vec); mat4.translate(dest, origin); var quatMat = mat4.create(); quat4.toMat4(quat, quatMat); mat4.multiply(dest, quatMat); mat4.scale(dest, scale) mat4.translate(dest, negativeOrigin);
+// //
+//
+// //    mat4.fromRotation(mat, 90 * (Math.PI / 180.0), vec3.fromValues(0,0,1));
+//     console.log('threejs:   ', m.elements);
+//     console.log('gl-matrix: ', mat);
+//
+// //    mat4.getRotation(out, mat)
+//     </script>
+
+	</body>
+</html>

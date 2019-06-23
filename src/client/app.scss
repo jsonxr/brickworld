@@ -6,10 +6,59 @@ html, body {
 }
 
 body {
-  background-color: #eeeeee;
+  background-color: #222;
   margin: 0;
   overflow: hidden;
   font-family: arial;
+}
+
+#ui {
+  text-align:center;
+  margin:0;
+  border: 0;
+  width:100%;
+  height:100%;
+}
+
+div#bottom {
+  position: fixed;
+  bottom: 0;
+
+  /* And if you want the div to be full-width: */
+  left: 0;
+  right: 0;
+}
+
+.commands {
+  opacity: 0.8;
+  visibility: hidden;
+  position: fixed;
+  border: 0;
+  color: white;
+  font-size: 1.5em;
+  font-family: consolas,Courier new;
+  background-color: #000000;
+}
+
+#command {
+  @extend .commands;
+  bottom: 1em;
+  width:98%;
+  margin: 0 0 0 -49%;
+  left:50%;
+}
+
+#commandhistory {
+  @extend .commands;
+  bottom: 3em;
+  left:1em;
+  width:640px;
+  height: 480px;
+}
+
+#inventory {
+  visibility: hidden;
+  position: fixed;
 }
 
 canvas {
@@ -17,3 +66,4 @@ canvas {
   width:100%;
   height:100%;
 }
+

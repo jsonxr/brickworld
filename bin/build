@@ -1,0 +1,17 @@
+#!/bin/sh -e
+DOCKER_USER=jsonxr
+NAME=`grep '"name":' package.json | cut -f2 -d: | cut -f2 -d'"'`
+VERSION=`grep '"version":' package.json | cut -f2 -d: | cut -f2 -d'"'`
+GIT_HASH=$(git log --format='%H' -n1)
+GIT_BRANCH=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+# Get the tag for the container. If we don't know it, use local. If master, use the version in package.json
+TAG="$GIT_BRANCH"
+if [ "$TAG" = "" ]; then
+  TAG="local"
+elif [ "$TAG" = "master" ]; then
+  TAG=$VERSION
+fi
+
+echo "docker build --tag=$DOCKER_USER/$NAME:$TAG ."
+docker build --tag=$DOCKER_USER/$NAME:$TAG .
