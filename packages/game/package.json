@@ -1,0 +1,38 @@
+{
+  "name": "@app/game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server --port 8080",
+    "build-?": "yarn run clean && yarn run compile",
+    "clean": "node_modules/.bin/rimraf -rf ./dist ./node_modules yarn-error.log",
+    "compile": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn run build",
+    "test": "yarn run build",
+    "lint": "node_modules/.bin/eslint 'src/**/*.{js,ts,tsx,jsx,json}'"
+  },
+  "dependencies": {
+    "@app/foo": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@babylonjs/core": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babylonjs/core": "^4.1.0",
+    "@babylonjs/inspector": "^4.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^4.5.0",
+    "ts-loader": "^8.0.4",
+
+    "rimraf": "*",
+    "typescript": "*",
+    "eslint": "*",
+
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

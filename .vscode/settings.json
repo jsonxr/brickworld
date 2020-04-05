@@ -1,0 +1,7 @@
+{
+  "files.exclude": {
+    ".vscode": true,
+    "**/dixst": true,
+    "**/nodex_modules": true
+  }
+}

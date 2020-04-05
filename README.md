@@ -1,100 +1,37 @@
 # brickworld
 
-This is an attempt to make a world composed of building bricks, playable in a browser. Users can share their creations easily. Users can share objects like furnature, vehicles, etc through instruction books. Users can share sections of their world that other users can then import into their own world.
+A browser based procedurally generated world where your brick creations come alive. The world is populated by minifigs going about their daily lives. You can follow a minifig to see where they work, play, eat, and live.
 
-Desired Features:
+[www.brickworld.fun](https://www.jasonrowland.com/brickworld)
 
-- Runs in the browser for zero friction playing
-- Plugins written in javascript, assets bundled as a zip file
-- Plugins run in a sandbox so 3rd party content can't hose your world
-- Seemlessly move between 3rd party servers. Similar to following a link in a browser.
-- Ability to connect worlds to larger worlds.
-- Safe experience for kids to play.
+![](docs/images/gameplay/town.jpg)
 
-Technical:
+This is an attempt to make a world composed of building bricks, playable in a browser. Users can share their creations easily. Users can share objects like furniture, vehicles, etc through instruction books. Users can share sections of their world that other users can then import into their own world.
 
-- WebGL
-- javacript es6
-- node 6.2
-- Cassandra?
+A shared playground where users can create their own models, worlds, and adventures for other users to explore.  Users can create it just for themselves, share it with friends, or share it with the world.
 
-Resources:
 
-- https://twgljs.org/
-- https://medium.com/javascript-and-opinions/state-of-the-art-javascript-in-2016-ab67fc68eb0b#.59xwjq5b4
+- Solo - A user is in complete control of their world. There are no constraints. They can build any model, part, plugin, econonmy they wish and deploy in their own world.
 
-# running
+- Shared - A user can create a shared world with their friends.
 
-    npm start
+- Public
 
-# npm libraries
+  - Runs in the browser for zero friction playing
+  - Each user can create their own worlds and connect their worlds with their friends
+  - Users can create a shared world with their friends
+  - Users can choose models
+  - Users can select plugins (ai, models, game rules, parts)
+  - Users can link to other worlds as if they were their own
+  - Safe experience for kids to play
 
-- "express": "^4.14.0" - Node web server framework
-- "gl-matrix": "^2.3.2" - Enables matrix, vector math on client
-- "ldraw": "^0.1.1", - Parses ldraw libraries for converting
-- "yargs": "^4.7.1" - Command line parser
-- "twgl.js": "^1.7.1" - Thin wrapper around webgl
 
-# References
+## [Authoring](docs/dev/authoring.md)
 
-## Monorepo
+How to author parts
 
-- https://medium.com/@NiGhTTraX/how-to-set-up-a-typescript-monorepo-with-lerna-c6acda7d4559
--
+## [Blockchain](docs/dev/blockchain.md)
+Blockchain ideas
 
-# Future
 
-- Webpack 2: native es6 modules, tree shaking for unused code
-- Only modern browsers supported. Removed the es6 polyfill... "babel-polyfill": "^6.9.1",
-
-# Production
-
-https://github.com/systemjs/systemjs/blob/master/docs/production-workflows.md - There is a different way to load bundled source? Also there is an ability to load several things at once. Delayed images, etc.
-
-# Browser Requirements
-
-## performance.now()
-
-http://caniuse.com/#search=performance.now
-
-Feature Detection:
-if (timestamp < 1e12) {
-// .. high resolution timer
-} else {
-// integer milliseconds since unix epoch
-}
-
-## XMLHttpRequest Level 2 (all browsers)
-
-http://caniuse.com/#search=xhr2
-
-https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
-Blob?
-
-var verts = [];
-var floatBuffer = new Float32Array(verts.length * 7);
-var byteBuffer = new Uint8Array(floatBuffer); // view float buffer as bytes
-for (i = 0; i < verts.length; i++) {
-floatBuffer[i*4 + 0] = verts.x;
-floatBuffer[i*4 + 1] = verts.y;
-floatBuffer[i*4 + 2] = verts.z;
-
-// RGBA values expected as 0-255
-byteBuffer[i*16 + 12] = verts.r;
-byteBuffer[i*16 + 13] = verts.g;
-byteBuffer[i*16 + 14] = verts.b;
-byteBuffer[i*16 + 15] = verts.a;
-}
-
-var vertexBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, floatBuffer, gl.STATIC_DRAW);
-
-// To render later
-gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-gl.vertexAttribPointer(attributes.aPosition, 3, gl.FLOAT, false, 16, 0);
-gl.vertexAttribPointer(attributes.aColor, 4, gl.UNSIGNED_BYTE, false, 16, 12);
-
-//Shader code:
-attribute vec3 aPosition;
-atribute vec4 aColor;
+* Monorepo: https://medium.com/@NiGhTTraX/how-to-set-up-a-typescript-monorepo-with-lerna-c6acda7d4559

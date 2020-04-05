@@ -1,6 +1,7 @@
 {
   "name": "@jsonxr/brickworld",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "brickworld ==============",
   "main": "index.js",
   "private": true,
@@ -11,8 +12,10 @@
     "doc": "docs"
   },
   "scripts": {
+    "clean": "yarn workspaces run clean",
+    "build": "yarn workspace build",
     "docs": "docsify serve docs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "yarn workspaces run lint"
   },
   "repository": {
     "type": "git",
@@ -20,7 +23,6 @@
   },
   "keywords": [],
   "author": "Jason Rowland <jsonxr@gmail.com>",
-  "license": "mit",
   "bugs": {
     "url": "https://github.com/jsonxr/brickworld/issues"
   },
@@ -28,6 +30,17 @@
   "devDependencies": {
     "docsify-cli": "^4.4.1",
     "ldraw": "^0.1.1",
+    "lerna": "^3.22.1",
+
+    "eslint": "^7.10.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-jest": "^24.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
+
+    "prettier": "^2.1.2",
+
     "rimraf": "^3.0.2",
     "typescript": "^4.0.3"
   }

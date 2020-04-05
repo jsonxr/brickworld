@@ -4,6 +4,9 @@
   "compilerOptions": {
     "baseUrl": "./packages",
     "paths": {
+      "@app/foo": ["foo/src"],
+      "@app/shared": ["shared/src"],
+      "@app/game": ["game/src"],
       "@app/*": ["*/src"]
     }
   }

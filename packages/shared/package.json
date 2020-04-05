@@ -1,0 +1,26 @@
+{
+  "name": "@app/shared",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/index",
+  "types": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "yarn run clean && yarn run compile",
+    "clean": "node_modules/.bin/rimraf -rf ./dist ./node_modules yarn-error.log",
+    "compile": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn run build",
+    "test": "yarn run build",
+    "lint": "node_modules/.bin/eslint 'src/**/*.{js,ts,tsx,jsx,json}'"
+  },
+  "dependencies": {
+    "@app/foo": "^1.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "*",
+    "typescript": "*",
+    "eslint": "*"
+  }
+}
