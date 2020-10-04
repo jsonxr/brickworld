@@ -1,0 +1,34 @@
+{
+  "name": "@jsonxr/brickworld",
+  "version": "1.0.0",
+  "description": "brickworld ==============",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "docs": "docsify serve docs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsonxr/brickworld.git"
+  },
+  "keywords": [],
+  "author": "Jason Rowland <jsonxr@gmail.com>",
+  "license": "mit",
+  "bugs": {
+    "url": "https://github.com/jsonxr/brickworld/issues"
+  },
+  "homepage": "https://github.com/jsonxr/brickworld#readme",
+  "devDependencies": {
+    "docsify-cli": "^4.4.1",
+    "ldraw": "^0.1.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.3"
+  }
+}
